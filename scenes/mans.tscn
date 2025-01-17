@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://q3om0n6fljfc"]
+
+[ext_resource type="Script" path="res://scripts/mans.gd" id="1_h6m7i"]
+[ext_resource type="Texture2D" uid="uid://b2wixdyi3dao5" path="res://assets/sprites/mans.png" id="2_psv55"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sg6qj"]
+radius = 5.0
+height = 12.0
+
+[sub_resource type="Gradient" id="Gradient_op4qa"]
+colors = PackedColorArray(0, 0, 0, 0.447059, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_kwrrn"]
+gradient = SubResource("Gradient_op4qa")
+width = 6
+height = 4
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+metadata/_snap_enabled = true
+
+[node name="mans" type="Node2D"]
+script = ExtResource("1_h6m7i")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CapsuleShape2D_sg6qj")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+position = Vector2(0, 4)
+texture = SubResource("GradientTexture2D_kwrrn")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -4)
+texture = ExtResource("2_psv55")
+offset = Vector2(0, 4)
+hframes = 5
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
