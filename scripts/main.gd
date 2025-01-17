@@ -10,8 +10,13 @@ var is_group_dragging: bool = false
 func _draw() -> void:
 	if is_selecting:
 		var rect = get_selection_rect()
-		draw_rect(rect, Color(1, 1, 0, 0.2))  # Fill
-		draw_rect(rect, Color(1, 1, 0, 0.8), false)  # Outline
+		var shadow_rect = Rect2(
+			Vector2(rect.position.x+1, rect.position.y+1), 
+			rect.size
+		)
+		draw_rect(shadow_rect, Color(0, 0, 0, 0.2))  # shadow
+		draw_rect(rect, Color(Global.HIGHLIGHT_COLOR, 0.2))  # Fill
+		draw_rect(rect, Color(Global.HIGHLIGHT_COLOR, 0.8), false)  # Outline
 		
 		# Preview thickness for mans in selection
 		for child in get_children():

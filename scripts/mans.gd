@@ -31,7 +31,7 @@ func update_outline() -> void:
 	var material = sprite.material as ShaderMaterial
 	if material:
 		material.set_shader_parameter("enabled", is_selected or is_hovered)
-		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Color.YELLOW)
+		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
 		material.set_shader_parameter("outline_width", 1.0)
 
 func select() -> void:
@@ -157,5 +157,5 @@ func preview_select(enabled: bool) -> void:
 	var material = sprite.material as ShaderMaterial
 	if material:
 		material.set_shader_parameter("enabled", enabled or is_selected or is_hovered)
-		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Color.YELLOW)
+		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
 		#material.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
