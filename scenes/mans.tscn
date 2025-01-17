@@ -1,5 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://q3om0n6fljfc"]
+[gd_scene load_steps=10 format=3 uid="uid://q3om0n6fljfc"]
 
+[ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="1_0bgf1"]
 [ext_resource type="Script" path="res://scripts/mans.gd" id="1_h6m7i"]
 [ext_resource type="Texture2D" uid="uid://b2wixdyi3dao5" path="res://assets/sprites/mans.png" id="2_psv55"]
 
@@ -23,6 +24,14 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 metadata/_snap_enabled = true
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_msw2u"]
+resource_local_to_scene = true
+shader = ExtResource("1_0bgf1")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/enabled = false
+shader_parameter/modulate = Color(1, 1, 1, 1)
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yod3x"]
 radius = 3.0
 height = 10.0
@@ -37,6 +46,7 @@ script = ExtResource("1_h6m7i")
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
 shape = SubResource("CapsuleShape2D_sg6qj")
 
 [node name="Shadow" type="Sprite2D" parent="."]
@@ -44,12 +54,14 @@ position = Vector2(0, 4)
 texture = SubResource("GradientTexture2D_kwrrn")
 
 [node name="Sprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_msw2u")
 position = Vector2(0, -4)
 texture = ExtResource("2_psv55")
 offset = Vector2(0, 4)
 hframes = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("CapsuleShape2D_yod3x")
 
 [connection signal="input_event" from="Area2D" to="." method="_on_input_event"]

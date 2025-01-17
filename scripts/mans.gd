@@ -5,6 +5,8 @@ extends RigidBody2D
 @onready var sprite: Sprite2D = $Sprite
 
 var is_dragging: bool = false
+var is_selected: bool = false
+var is_hovered: bool = false
 var drag_offset: Vector2
 var prev_position: Vector2
 var rotation_velocity: float = 0.0
@@ -19,14 +21,36 @@ var colors = [
 
 func _ready() -> void:
 	prev_position = position
-	sprite.modulate = colors[randi() % colors.size()]
+	var material = sprite.material as ShaderMaterial
+	material.set_shader_parameter("modulate", colors[randi() % colors.size()])
+	update_outline()
+
+func update_outline() -> void:
+	var material = sprite.material as ShaderMaterial
+	if material:
+		material.set_shader_parameter("enabled", is_selected or is_hovered)
+		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Color.YELLOW)
+		material.set_shader_parameter("outline_width", 2.0 if is_selected else 1.0)
+
+func select() -> void:
+	is_selected = true
+	update_outline()
+
+func deselect() -> void:
+	is_selected = false
+	update_outline()
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				pick_up()
-				drag_offset = position - get_global_mouse_position()
+				if is_selected:
+					# If we're part of a selection, tell main to handle group drag
+					get_parent().start_group_drag(get_global_mouse_position())
+				else:
+					# Otherwise just drag this mans
+					pick_up()
+					drag_offset = position - get_global_mouse_position()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			var direction = 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1
 			sprite.frame = wrapi(sprite.frame + direction, 0, 5)
@@ -44,10 +68,10 @@ func _input(event: InputEvent) -> void:
 	# Handle number keys for color changes while dragging
 	elif event is InputEventKey and is_dragging:
 		if event.pressed:
-			# Check for number keys 1-5
 			var key_num = event.keycode - KEY_1
 			if key_num >= 0 and key_num < colors.size():
-				sprite.modulate = colors[key_num]
+				var material = sprite.material as ShaderMaterial
+				material.set_shader_parameter("modulate", colors[key_num])
 
 func _physics_process(delta: float) -> void:
 	if is_dragging:
@@ -66,20 +90,37 @@ func _physics_process(delta: float) -> void:
 
 func pick_up():
 	is_dragging = true
+	is_hovered = true
 	sprite.position.y = -6
 	shadow.scale = Vector2(1.5, 1.5)
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG)
+	update_outline()
 
 func put_down():
 	is_dragging = false
+	is_hovered = false
 	sprite.position.y = -4
 	shadow.scale = Vector2(1, 1)
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+	update_outline()
 
 func _on_mouse_entered() -> void:
 	if !is_dragging:
 		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		is_hovered = true
+		update_outline()
 
 func _on_mouse_exited() -> void:
 	if !is_dragging:
 		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+		is_hovered = false
+		update_outline()
+
+# Called by main when starting a group drag
+func start_drag_in_group(mouse_pos: Vector2) -> void:
+	is_dragging = true
+	is_hovered = true
+	sprite.position.y = -6
+	shadow.scale = Vector2(1.5, 1.5)
+	drag_offset = position - mouse_pos
+	update_outline()
