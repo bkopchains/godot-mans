@@ -9,9 +9,3 @@ script = ExtResource("1_maoy3")
 [node name="mans" parent="." instance=ExtResource("1_foyq2")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-
-[node name="mans2" parent="." instance=ExtResource("1_foyq2")]
-position = Vector2(-64, 0)
-
-[node name="mans3" parent="." instance=ExtResource("1_foyq2")]
-position = Vector2(64, 0)

@@ -8,9 +8,11 @@ var drag_offset: Vector2
 var target_position: Vector2
 var prev_position: Vector2
 var rotation_velocity: float = 0.0
+var slide_velocity: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	# Wait one frame to ensure position is set
+	await get_tree().process_frame
 	target_position = position
 	prev_position = position
 
@@ -35,24 +37,33 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()  # Prevent new mans from spawning
 				queue_free()
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if is_dragging:
 		target_position = get_global_mouse_position() + drag_offset
-		
-	position = position.lerp(target_position, 0.01)
+		position = position.lerp(target_position, 0.05)  # Only lerp while dragging
+	else:
+		# Just apply sliding when not dragging, no lerping to target
+		position += slide_velocity * delta
+		slide_velocity = slide_velocity.lerp(Vector2.ZERO, 2.0 * delta)  # Even slower damping
 	
 	var velocity = (position - prev_position) / delta
-	rotation_velocity = lerp(rotation_velocity, velocity.x * 0.003, 0.03)
+	
+	if is_dragging:
+		slide_velocity = velocity  # Store amplified velocity while dragging
+	
+	if !is_dragging:
+		rotation_velocity = lerp(rotation_velocity, 0.0, 0.5)
+	else:
+		rotation_velocity = lerp(rotation_velocity, velocity.x * 0.005, 0.5)
 	sprite.rotation = rotation_velocity
 	
 	prev_position = position
 	
-	if !is_dragging:
-		rotation_velocity = lerp(rotation_velocity, 0.0, 0.05)
 
 func _on_area_2d_mouse_entered() -> void:
 	# Show grab cursor when hovering
-	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+	if !is_dragging:
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
 
 func _on_area_2d_mouse_exited() -> void:
 	# Reset cursor when not hovering (unless dragging)
