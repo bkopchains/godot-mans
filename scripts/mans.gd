@@ -3,6 +3,7 @@ extends RigidBody2D
 
 @onready var shadow: Sprite2D = $Shadow
 @onready var sprite: Sprite2D = $Sprite
+@onready var dust_particles: CPUParticles2D = $"Dust Particles"
 
 var is_dragging: bool = false
 var is_selected: bool = false
@@ -84,6 +85,8 @@ func _physics_process(delta: float) -> void:
 		var target = get_global_mouse_position() + drag_offset
 		var direction = (target - position)
 		linear_velocity = direction * 30
+	else:
+		check_off_screen()
 	
 	# Calculate rotation based on movement
 	if linear_velocity.length() > 1:
@@ -93,6 +96,24 @@ func _physics_process(delta: float) -> void:
 	
 	sprite.rotation = rotation_velocity
 	prev_position = position
+
+func check_off_screen() -> void:
+	var camera = get_viewport().get_camera_2d()
+	if !camera:
+		return
+		
+	var viewport_size = get_viewport_rect().size
+	var screen_center = camera.global_position
+	var margin = 50
+	
+	var left = screen_center.x - viewport_size.x/2 - margin
+	var right = screen_center.x + viewport_size.x/2 + margin
+	var top = screen_center.y - viewport_size.y/2 - margin
+	var bottom = screen_center.y + viewport_size.y/2 + margin
+	
+	if position.x < left or position.x > right or \
+	   position.y < top or position.y > bottom:
+		queue_free()
 
 func pick_up():
 	is_dragging = true
@@ -107,6 +128,7 @@ func put_down():
 	is_hovered = false
 	sprite.position.y = -4
 	shadow.scale = Vector2(1, 1)
+	dust_particles.emitting = true;
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	update_outline()
 
