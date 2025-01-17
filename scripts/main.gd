@@ -12,6 +12,11 @@ func _draw() -> void:
 		var rect = get_selection_rect()
 		draw_rect(rect, Color(1, 1, 0, 0.2))  # Fill
 		draw_rect(rect, Color(1, 1, 0, 0.8), false)  # Outline
+		
+		# Preview thickness for mans in selection
+		for child in get_children():
+			if child is Mans:
+				child.preview_select(rect.has_point(child.position))
 
 func get_selection_rect() -> Rect2:
 	var current_pos = get_global_mouse_position()
@@ -21,6 +26,13 @@ func get_selection_rect() -> Rect2:
 	)
 	var size = (current_pos - selection_start).abs()
 	return Rect2(top_left, size)
+
+func update_selection_preview() -> void:
+	if is_selecting:
+		var rect = get_selection_rect()
+		for child in get_children():
+			if child is Mans:
+				child.preview_select(rect.has_point(child.position))
 
 func start_group_drag(mouse_pos: Vector2) -> void:
 	is_group_dragging = true
@@ -54,8 +66,10 @@ func _unhandled_input(event: InputEvent) -> void:
 				if is_selecting:
 					is_selecting = false
 					var rect = get_selection_rect()
+					# Reset all preview thicknesses
 					for child in get_children():
 						if child is Mans:
+							child.preview_select(false)
 							if rect.has_point(child.position):
 								child.select()
 								selected_mans.append(child)
@@ -63,7 +77,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					is_group_dragging = false
 					for mans in selected_mans:
 						mans.put_down()
-					clear_selection()  # Clear selection after putting down
+					clear_selection()
 				queue_redraw()
 		
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -74,4 +88,5 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	elif event is InputEventMouseMotion:
 		if is_selecting:
+			update_selection_preview()
 			queue_redraw()

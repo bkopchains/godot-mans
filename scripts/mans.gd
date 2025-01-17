@@ -23,6 +23,7 @@ func _ready() -> void:
 	prev_position = position
 	var material = sprite.material as ShaderMaterial
 	material.set_shader_parameter("modulate", colors[randi() % colors.size()])
+	sprite.frame = randi() % sprite.hframes  # Randomize frame
 	update_outline()
 
 func update_outline() -> void:
@@ -30,7 +31,7 @@ func update_outline() -> void:
 	if material:
 		material.set_shader_parameter("enabled", is_selected or is_hovered)
 		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Color.YELLOW)
-		material.set_shader_parameter("outline_width", 2.0 if is_selected else 1.0)
+		material.set_shader_parameter("outline_width", 1.0)
 
 func select() -> void:
 	is_selected = true
@@ -65,13 +66,18 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				queue_free()
 	
-	# Handle number keys for color changes while dragging
-	elif event is InputEventKey and is_dragging:
-		if event.pressed:
+	# Handle number keys for color changes while hovering or selected
+	elif event is InputEventKey and event.pressed:
+		if event.keycode == KEY_0:  # Random color on 0 key
+			if is_hovered or is_selected:
+				var material = sprite.material as ShaderMaterial
+				material.set_shader_parameter("modulate", colors[randi() % colors.size()])
+		else:
 			var key_num = event.keycode - KEY_1
 			if key_num >= 0 and key_num < colors.size():
-				var material = sprite.material as ShaderMaterial
-				material.set_shader_parameter("modulate", colors[key_num])
+				if is_hovered or is_selected:
+					var material = sprite.material as ShaderMaterial
+					material.set_shader_parameter("modulate", colors[key_num])
 
 func _physics_process(delta: float) -> void:
 	if is_dragging:
@@ -124,3 +130,10 @@ func start_drag_in_group(mouse_pos: Vector2) -> void:
 	shadow.scale = Vector2(1.5, 1.5)
 	drag_offset = position - mouse_pos
 	update_outline()
+
+func preview_select(enabled: bool) -> void:
+	var material = sprite.material as ShaderMaterial
+	if material:
+		material.set_shader_parameter("enabled", enabled or is_selected or is_hovered)
+		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Color.YELLOW)
+		#material.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
