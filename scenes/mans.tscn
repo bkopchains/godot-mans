@@ -1,7 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://q3om0n6fljfc"]
+[gd_scene load_steps=8 format=3 uid="uid://q3om0n6fljfc"]
 
 [ext_resource type="Script" path="res://scripts/mans.gd" id="1_h6m7i"]
 [ext_resource type="Texture2D" uid="uid://b2wixdyi3dao5" path="res://assets/sprites/mans.png" id="2_psv55"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8kqxp"]
+friction = 0.0
+bounce = 0.5
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sg6qj"]
 radius = 5.0
@@ -19,7 +23,15 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 metadata/_snap_enabled = true
 
-[node name="mans" type="Node2D"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yod3x"]
+radius = 3.0
+height = 10.0
+
+[node name="mans" type="RigidBody2D"]
+physics_material_override = SubResource("PhysicsMaterial_8kqxp")
+gravity_scale = 0.0
+lock_rotation = true
+linear_damp = 1.0
 script = ExtResource("1_h6m7i")
 
 [node name="Area2D" type="Area2D" parent="."]
@@ -37,6 +49,9 @@ texture = ExtResource("2_psv55")
 offset = Vector2(0, 4)
 hframes = 5
 
-[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
-[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
-[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_yod3x")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_mouse_exited"]
