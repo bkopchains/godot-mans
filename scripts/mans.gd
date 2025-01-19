@@ -5,6 +5,8 @@ extends RigidBody2D
 @onready var sprite: Sprite2D = $Sprite
 @onready var dust_particles: CPUParticles2D = $"Dust Particles"
 @onready var attack_timer: Timer = $"Attack Timer"
+@onready var health_fill: ColorRect = $HealthBar/Fill
+@onready var health_bar: Node2D = $HealthBar
 
 var is_dragging: bool = false
 var is_selected: bool = false
@@ -25,7 +27,7 @@ var colors = [
 @export var stats: MansClass
 
 # Damage multiplier when hit by weakness
-const WEAKNESS_MULTIPLIER: float = 1.5
+const WEAKNESS_MULTIPLIER: float = 2
 
 # Add these near the top with other variables
 var team_color_index: int
@@ -60,6 +62,9 @@ func _ready() -> void:
 	update_outline()
 	linear_damp = BASE_DAMP
 	print("Stats: [Name: %s, HP: %d/%d, Attack: %d, Speed: %.1f, Type: %d, Weak vs: %d]" % [stats.name, stats.hp, stats.max_hp, stats.attack_power, stats.speed, stats.class_type, stats.weak_against])
+	update_health_bar()
+	Global.health_bars_toggled.connect(_on_health_bars_toggled)
+	health_bar.visible = Global.show_health_bars
 
 func update_outline() -> void:
 	var material = sprite.material as ShaderMaterial
@@ -199,20 +204,33 @@ func preview_select(enabled: bool) -> void:
 		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
 		#material.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
 
+func update_health_bar() -> void:
+	if health_fill:
+		var health_percent = float(stats.hp) / float(stats.max_hp)
+		health_fill.size.x = 10.0 * health_percent
+		health_fill.position.x = -5.0
+		
+		# Optional: Change color based on health
+		var g = clamp(health_percent * 2, 0, 1)  # Goes from 1 to 0
+		var r = clamp(2 - health_percent * 2, 0, 1)  # Goes from 0 to 1
+		health_fill.color = Color(r, g, 0.2, 0.8)
+
 func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
 	var final_damage = amount
 	if attacker_type == stats.weak_against:
 		final_damage = int(float(amount) * WEAKNESS_MULTIPLIER)
 	stats.hp = max(0, stats.hp - final_damage)
+	update_health_bar()
 	if is_dead():
 		remove_from_group("mans")
-		queue_free();
+		queue_free()
 
 func is_dead() -> bool:
 	return stats.hp <= 0
 
 func heal(amount: int) -> void:
 	stats.hp = min(stats.max_hp, stats.hp + amount)
+	update_health_bar()
 
 func apply_edge_avoidance() -> void:
 	var camera = get_viewport().get_camera_2d()
@@ -346,7 +364,8 @@ func start_lunge() -> void:
 	var direction = (current_target.position - position).normalized()
 	# Apply a single strong impulse
 	apply_central_impulse(direction * LUNGE_FORCE * stats.speed)
-	dust_particles.emitting = true
+	dust_particles.restart();
+	dust_particles.emitting = true;
 	
 	# Create a timer for ending the lunge
 	var lunge_timer = get_tree().create_timer(stats.speed)
@@ -357,3 +376,6 @@ func _on_lunge_timer_timeout() -> void:
 	lunge_cooldown = false
 	# Restore normal damping
 	linear_damp = BASE_DAMP
+
+func _on_health_bars_toggled(enabled: bool) -> void:
+	health_bar.visible = enabled

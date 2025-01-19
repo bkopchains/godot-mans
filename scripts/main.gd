@@ -119,3 +119,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	elif event.is_action_pressed("toggle_battle"):
 		Global.toggle_battle_mode()
+
+	elif event.is_action_pressed("toggle_health"):
+		Global.toggle_health_bars()

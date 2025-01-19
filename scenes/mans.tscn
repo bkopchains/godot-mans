@@ -83,6 +83,15 @@ shape = SubResource("CapsuleShape2D_yod3x")
 
 [node name="Attack Timer" type="Timer" parent="."]
 
+[node name="HealthBar" type="Node2D" parent="."]
+position = Vector2(0, -7)
+
+[node name="Fill" type="ColorRect" parent="HealthBar"]
+offset_left = -5.0
+offset_right = 5.0
+offset_bottom = 1.0
+color = Color(0.2, 0.8, 0.2, 0.8)
+
 [connection signal="body_entered" from="Area2D" to="." method="_on_body_entered"]
 [connection signal="input_event" from="Area2D" to="." method="_on_input_event"]
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_mouse_entered"]

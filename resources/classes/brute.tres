@@ -8,6 +8,6 @@ name = "Brute"
 max_hp = 150
 hp = 150
 attack_power = 15
-speed = 0.75
+speed = 1.75
 class_type = 2
 weak_against = 1
