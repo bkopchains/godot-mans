@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/mans_class.gd" id="1_loecn"]
 
 [resource]
+resource_local_to_scene = true
 script = ExtResource("1_loecn")
 name = "Man"
 max_hp = 100

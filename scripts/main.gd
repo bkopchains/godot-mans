@@ -98,8 +98,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			var new_mans = mans_scene.instantiate() as Mans
 			new_mans.position = get_global_mouse_position()
 			
-			# Assign random class
-			new_mans.stats = class_resources[randi() % class_resources.size()]
+			# Create a unique instance of the class stats
+			var random_class = class_resources[randi() % class_resources.size()]
+			new_mans.stats = random_class.duplicate()
 			
 			add_child(new_mans)
 			get_viewport().set_input_as_handled()

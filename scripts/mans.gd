@@ -36,10 +36,14 @@ const ATTACK_FORCE: float = 25.0
 
 # Add these variables near the top
 var is_lunging: bool = false
-const LUNGE_DURATION: float = 0.2  # How long each lunge movement lasts
+const LUNGE_DURATION: float = 0.1  # How long each lunge movement lasts
 const LUNGE_FORCE: float = 25.0   # Increased force for quick lunges
 const BASE_DAMP: float = 1.0      # Normal linear damping
-const LUNGE_DAMP: float = 0.5     # Reduced damping during lunges
+const LUNGE_DAMP: float = 0.75     # Reduced damping during lunges
+
+# Add these constants near the top
+const SCREEN_MARGIN: float = 10.0  # Distance from edge to start avoiding
+const EDGE_FORCE: float = 200.0     # Force to apply when near edges
 
 func _ready() -> void:
 	add_to_group("mans")
@@ -55,6 +59,7 @@ func _ready() -> void:
 	
 	update_outline()
 	linear_damp = BASE_DAMP
+	print("Stats: [Name: %s, HP: %d/%d, Attack: %d, Speed: %.1f, Type: %d, Weak vs: %d]" % [stats.name, stats.hp, stats.max_hp, stats.attack_power, stats.speed, stats.class_type, stats.weak_against])
 
 func update_outline() -> void:
 	var material = sprite.material as ShaderMaterial
@@ -209,16 +214,48 @@ func is_dead() -> bool:
 func heal(amount: int) -> void:
 	stats.hp = min(stats.max_hp, stats.hp + amount)
 
+func apply_edge_avoidance() -> void:
+	var camera = get_viewport().get_camera_2d()
+	if !camera:
+		return
+		
+	var viewport_size = get_viewport_rect().size
+	var screen_center = camera.global_position
+	
+	var left = screen_center.x - viewport_size.x/2
+	var right = screen_center.x + viewport_size.x/2
+	var top = screen_center.y - viewport_size.y/2
+	var bottom = screen_center.y + viewport_size.y/2
+	
+	var force = Vector2.ZERO
+	
+	# Check each edge and apply appropriate force
+	if position.x - left < SCREEN_MARGIN:
+		force.x = (SCREEN_MARGIN - (position.x - left)) * (EDGE_FORCE/SCREEN_MARGIN)
+	elif right - position.x < SCREEN_MARGIN:
+		force.x = -((SCREEN_MARGIN - (right - position.x)) * (EDGE_FORCE/SCREEN_MARGIN))
+		
+	if position.y - top < SCREEN_MARGIN:
+		force.y = (SCREEN_MARGIN - (position.y - top)) * (EDGE_FORCE/SCREEN_MARGIN)
+	elif bottom - position.y < SCREEN_MARGIN:
+		force.y = -((SCREEN_MARGIN - (bottom - position.y)) * (EDGE_FORCE/SCREEN_MARGIN))
+	
+	if force != Vector2.ZERO:
+		apply_central_force(force)
+
 func handle_combat() -> void:
 	if is_dead() or is_lunging:
 		return
 		
-	if !current_target:
+	if !current_target or current_target.is_dead():
 		find_nearest_enemy()
+		if !current_target:
+			return
 	
-	if current_target and !lunge_cooldown:
-		# Start a lunge attack
+	if !lunge_cooldown:
 		start_lunge()
+	
+	apply_edge_avoidance()
 
 func find_nearest_enemy() -> void:
 	var shortest_distance = INF
@@ -292,6 +329,8 @@ func handle_peaceful() -> void:
 		
 		# Apply attraction force
 		apply_central_force(direction * attraction_force * stats.speed)
+	
+	apply_edge_avoidance()
 
 func start_lunge() -> void:
 	is_lunging = true
