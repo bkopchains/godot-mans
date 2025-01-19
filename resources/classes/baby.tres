@@ -9,5 +9,5 @@ max_hp = 60
 hp = 60
 attack_power = 7
 speed = 1.75
-class_type = 3
-weak_against = 4
+class_type = 4
+weak_against = 3

@@ -10,9 +10,9 @@ extends Resource
 @export var weak_against: ClassType = ClassType.BRUTE  # Each class is weak against another
 
 enum ClassType {
-	MAN,
-	BRUTE, 
-	WIZARD,
-	BABY,
-	DOG
+	MAN,    # 0
+	WIZARD, # 1
+	BRUTE,  # 2
+	DOG,    # 3
+	BABY    # 4
 }

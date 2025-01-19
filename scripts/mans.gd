@@ -36,8 +36,8 @@ const ATTACK_FORCE: float = 25.0
 
 # Add these variables near the top
 var is_lunging: bool = false
-const LUNGE_DURATION: float = 0.1  # How long each lunge movement lasts
-const LUNGE_FORCE: float = 25.0   # Increased force for quick lunges
+const LUNGE_DURATION: float = 1  # How long each lunge movement lasts
+const LUNGE_FORCE: float = 50.0   # Increased force for quick lunges
 const BASE_DAMP: float = 1.0      # Normal linear damping
 const LUNGE_DAMP: float = 0.75     # Reduced damping during lunges
 
@@ -244,17 +244,20 @@ func apply_edge_avoidance() -> void:
 		apply_central_force(force)
 
 func handle_combat() -> void:
-	if is_dead() or is_lunging:
+	if is_dead():
 		return
 		
-	if !current_target or current_target.is_dead():
-		find_nearest_enemy()
-		if !current_target:
-			return
+	# Only find target and start lunge if we're not currently lunging
+	if !is_lunging:
+		if !current_target or current_target.is_dead():
+			find_nearest_enemy()
+			if !current_target:
+				return
+		
+		if !lunge_cooldown:
+			start_lunge()
 	
-	if !lunge_cooldown:
-		start_lunge()
-	
+	# Only apply edge avoidance
 	apply_edge_avoidance()
 
 func find_nearest_enemy() -> void:
@@ -346,7 +349,7 @@ func start_lunge() -> void:
 	dust_particles.emitting = true
 	
 	# Create a timer for ending the lunge
-	var lunge_timer = get_tree().create_timer(LUNGE_DURATION)
+	var lunge_timer = get_tree().create_timer(stats.speed)
 	lunge_timer.timeout.connect(_on_lunge_timer_timeout)
 
 func _on_lunge_timer_timeout() -> void:

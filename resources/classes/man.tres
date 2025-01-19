@@ -11,4 +11,4 @@ hp = 100
 attack_power = 10
 speed = 1.0
 class_type = 0
-weak_against = 1
+weak_against = 2

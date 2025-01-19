@@ -5,10 +5,10 @@ extends Node2D
 # Add these class preloads
 var class_resources = [
 	preload("res://resources/classes/man.tres"),
-	preload("res://resources/classes/brute.tres"),
 	preload("res://resources/classes/wizard.tres"),
-	preload("res://resources/classes/baby.tres"),
-	preload("res://resources/classes/dog.tres")
+	preload("res://resources/classes/brute.tres"),
+	preload("res://resources/classes/dog.tres"),
+	preload("res://resources/classes/baby.tres")
 ]
 
 var selection_start: Vector2
