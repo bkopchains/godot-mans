@@ -2,6 +2,15 @@ extends Node2D
 
 @export var mans_scene: PackedScene = preload("res://scenes/mans.tscn")
 
+# Add these class preloads
+var class_resources = [
+	preload("res://resources/classes/man.tres"),
+	preload("res://resources/classes/brute.tres"),
+	preload("res://resources/classes/wizard.tres"),
+	preload("res://resources/classes/baby.tres"),
+	preload("res://resources/classes/dog.tres")
+]
+
 var selection_start: Vector2
 var is_selecting: bool = false
 var selected_mans: Array[Mans] = []
@@ -86,8 +95,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				queue_redraw()
 		
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			var new_mans = mans_scene.instantiate()
+			var new_mans = mans_scene.instantiate() as Mans
 			new_mans.position = get_global_mouse_position()
+			
+			# Assign random class
+			new_mans.stats = class_resources[randi() % class_resources.size()]
+			
 			add_child(new_mans)
 			get_viewport().set_input_as_handled()
 	
@@ -102,3 +115,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				remove_child(mans);
 				mans.queue_free();
 			selected_mans.clear();
+
+	elif event.is_action_pressed("toggle_battle"):
+		Global.toggle_battle_mode()

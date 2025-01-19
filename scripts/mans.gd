@@ -4,6 +4,7 @@ extends RigidBody2D
 @onready var shadow: Sprite2D = $Shadow
 @onready var sprite: Sprite2D = $Sprite
 @onready var dust_particles: CPUParticles2D = $"Dust Particles"
+@onready var attack_timer: Timer = $"Attack Timer"
 
 var is_dragging: bool = false
 var is_selected: bool = false
@@ -26,13 +27,34 @@ var colors = [
 # Damage multiplier when hit by weakness
 const WEAKNESS_MULTIPLIER: float = 1.5
 
+# Add these near the top with other variables
+var team_color_index: int
+var current_target: Mans = null
+var lunge_cooldown: bool = false
+var attack_cooldown: bool = false
+const ATTACK_FORCE: float = 25.0
+
+# Add these variables near the top
+var is_lunging: bool = false
+const LUNGE_DURATION: float = 0.2  # How long each lunge movement lasts
+const LUNGE_FORCE: float = 25.0   # Increased force for quick lunges
+const BASE_DAMP: float = 1.0      # Normal linear damping
+const LUNGE_DAMP: float = 0.5     # Reduced damping during lunges
+
 func _ready() -> void:
+	add_to_group("mans")
 	prev_position = position
 	var material = sprite.material as ShaderMaterial
-	material.set_shader_parameter("modulate", colors[randi() % colors.size()])
-	sprite.frame = randi() % sprite.hframes  # Randomize frame
+	
+	# Match sprite frame to class type
+	sprite.frame = stats.class_type
+	
+	# Set color based on team (using the same index system)
+	team_color_index = randi() % colors.size()
+	material.set_shader_parameter("modulate", colors[team_color_index])
 	
 	update_outline()
+	linear_damp = BASE_DAMP
 
 func update_outline() -> void:
 	var material = sprite.material as ShaderMaterial
@@ -93,6 +115,11 @@ func _physics_process(delta: float) -> void:
 		var direction = (target - position)
 		linear_velocity = direction * 30
 	else:
+		if Global.battle_mode_enabled:
+			handle_combat()
+		else:
+			handle_peaceful()
+		
 		check_off_screen()
 	
 	# Calculate rotation based on movement
@@ -172,9 +199,119 @@ func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
 	if attacker_type == stats.weak_against:
 		final_damage = int(float(amount) * WEAKNESS_MULTIPLIER)
 	stats.hp = max(0, stats.hp - final_damage)
+	if is_dead():
+		remove_from_group("mans")
+		queue_free();
 
 func is_dead() -> bool:
 	return stats.hp <= 0
 
 func heal(amount: int) -> void:
 	stats.hp = min(stats.max_hp, stats.hp + amount)
+
+func handle_combat() -> void:
+	if is_dead() or is_lunging:
+		return
+		
+	if !current_target:
+		find_nearest_enemy()
+	
+	if current_target and !lunge_cooldown:
+		# Start a lunge attack
+		start_lunge()
+
+func find_nearest_enemy() -> void:
+	var shortest_distance = INF
+	current_target = null
+	
+	for mans in get_tree().get_nodes_in_group("mans"):
+		if mans != self and mans.team_color_index != team_color_index and !mans.is_dead():
+			var distance = position.distance_to(mans.position)
+			if distance < shortest_distance:
+				shortest_distance = distance
+				current_target = mans
+
+# Add this new collision handler
+func _on_body_entered(body: Node2D) -> void:
+	if !Global.battle_mode_enabled or attack_cooldown:
+		return
+		
+	if body is Mans and body.team_color_index != team_color_index:
+		attack(body)
+
+func attack(target: Mans) -> void:
+	if !attack_cooldown:
+		target.take_damage(stats.attack_power, stats.class_type)
+		attack_cooldown = true
+		attack_timer.start(1.0 / stats.speed)  # Attack speed based on speed stat
+
+func _on_attack_timer_timeout() -> void:
+	attack_cooldown = false
+
+# Add this to handle battle mode changes
+func _on_battle_mode_toggled(enabled: bool) -> void:
+	if !enabled:
+		current_target = null
+		lunge_cooldown = false
+		is_lunging = false
+		linear_velocity = Vector2.ZERO
+	else:
+		linear_velocity = Vector2.ZERO
+
+func handle_peaceful() -> void:
+	if is_dead():
+		return
+		
+	var same_team_center = Vector2.ZERO
+	var count = 0
+	var max_force = 100.0
+	var repulsion_distance = 10.0
+	
+	# Debug print to check group size
+	#print("Finding teammates from group size: ", get_tree().get_nodes_in_group("mans").size())
+	
+	for mans in get_tree().get_nodes_in_group("mans"):
+		if mans != self and !mans.is_dead() and mans.team_color_index == team_color_index:
+			same_team_center += mans.position
+			count += 1
+			
+			# Add repulsion force if too close
+			var distance = position.distance_to(mans.position)
+			if distance < repulsion_distance:
+				var repulsion = (position - mans.position).normalized()
+				apply_central_force(repulsion * max_force * (1.0 - distance/repulsion_distance))
+	
+	if count > 0:
+		same_team_center /= count
+		var direction = (same_team_center - position).normalized()
+		var distance_to_center = position.distance_to(same_team_center)
+		
+		# Stronger attraction force when far from center
+		var attraction_force = max_force * (distance_to_center / 100.0)
+		attraction_force = min(attraction_force, max_force)
+		
+		# Apply attraction force
+		apply_central_force(direction * attraction_force * stats.speed)
+
+func start_lunge() -> void:
+	is_lunging = true
+	lunge_cooldown = true
+	
+	# Reduce damping during lunge for more sliding
+	linear_damp = LUNGE_DAMP
+	
+	# Calculate direction to target
+	var direction = (current_target.position - position).normalized()
+	# Apply a single strong impulse
+	apply_central_impulse(direction * LUNGE_FORCE * stats.speed)
+	dust_particles.emitting = true
+	
+	# Create a timer for ending the lunge
+	var lunge_timer = get_tree().create_timer(LUNGE_DURATION)
+	lunge_timer.timeout.connect(_on_lunge_timer_timeout)
+
+func _on_lunge_timer_timeout() -> void:
+	is_lunging = false
+	lunge_cooldown = false
+	# Restore normal damping
+	linear_damp = BASE_DAMP
