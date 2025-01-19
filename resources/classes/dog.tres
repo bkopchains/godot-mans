@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MansClass" load_steps=2 format=3 uid="uid://cnisf6nqun8g0"]
+
+[ext_resource type="Script" path="res://scripts/mans_class.gd" id="1_vy57n"]
+
+[resource]
+script = ExtResource("1_vy57n")
+name = "Dog"
+max_hp = 75
+hp = 75
+attack_power = 8
+speed = 1.0
+class_type = 4
+weak_against = 0

@@ -95,3 +95,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_selecting:
 			update_selection_preview()
 			queue_redraw()
+			
+	if event.is_action_pressed("delete"):
+		if selected_mans.size() > 0:
+			for mans in selected_mans:
+				remove_child(mans);
+				mans.queue_free();
+			selected_mans.clear();

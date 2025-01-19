@@ -37,8 +37,8 @@ shader_parameter/enabled = false
 shader_parameter/modulate = Color(1, 1, 1, 1)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yod3x"]
-radius = 2.0
-height = 4.0
+radius = 3.0
+height = 8.0
 
 [node name="mans" type="RigidBody2D"]
 physics_material_override = SubResource("PhysicsMaterial_8kqxp")
@@ -79,7 +79,6 @@ offset = Vector2(0, 4)
 hframes = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 3)
 shape = SubResource("CapsuleShape2D_yod3x")
 
 [connection signal="input_event" from="Area2D" to="." method="_on_input_event"]

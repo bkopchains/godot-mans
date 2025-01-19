@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MansClass" load_steps=2 format=3 uid="uid://jiieyvkclpkq"]
+
+[ext_resource type="Script" path="res://scripts/mans_class.gd" id="1_cr7f0"]
+
+[resource]
+script = ExtResource("1_cr7f0")
+name = "Brute"
+max_hp = 150
+hp = 150
+attack_power = 15
+speed = 0.75
+class_type = 1
+weak_against = 2

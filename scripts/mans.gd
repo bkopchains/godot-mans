@@ -20,11 +20,18 @@ var colors = [
 	Color(1, 0.3, 1),    # Purple
 ]
 
+# Reference to the class data
+@export var stats: MansClass
+
+# Damage multiplier when hit by weakness
+const WEAKNESS_MULTIPLIER: float = 1.5
+
 func _ready() -> void:
 	prev_position = position
 	var material = sprite.material as ShaderMaterial
 	material.set_shader_parameter("modulate", colors[randi() % colors.size()])
 	sprite.frame = randi() % sprite.hframes  # Randomize frame
+	
 	update_outline()
 
 func update_outline() -> void:
@@ -159,3 +166,15 @@ func preview_select(enabled: bool) -> void:
 		material.set_shader_parameter("enabled", enabled or is_selected or is_hovered)
 		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
 		#material.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
+
+func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
+	var final_damage = amount
+	if attacker_type == stats.weak_against:
+		final_damage = int(float(amount) * WEAKNESS_MULTIPLIER)
+	stats.hp = max(0, stats.hp - final_damage)
+
+func is_dead() -> bool:
+	return stats.hp <= 0
+
+func heal(amount: int) -> void:
+	stats.hp = min(stats.max_hp, stats.hp + amount)

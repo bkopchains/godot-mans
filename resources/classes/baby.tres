@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MansClass" load_steps=2 format=3 uid="uid://lk1u4eesdlrm"]
+
+[ext_resource type="Script" path="res://scripts/mans_class.gd" id="1_eajim"]
+
+[resource]
+script = ExtResource("1_eajim")
+name = "Baby"
+max_hp = 60
+hp = 60
+attack_power = 7
+speed = 1.75
+class_type = 3
+weak_against = 4
