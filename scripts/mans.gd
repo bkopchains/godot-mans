@@ -61,7 +61,7 @@ func _ready() -> void:
 	
 	update_outline()
 	linear_damp = BASE_DAMP
-	print("Stats: [Name: %s, HP: %d/%d, Attack: %d, Speed: %.1f, Type: %d, Weak vs: %d]" % [stats.name, stats.hp, stats.max_hp, stats.attack_power, stats.speed, stats.class_type, stats.weak_against])
+	#print("Stats: [Name: %s, HP: %d/%d, Attack: %d, Speed: %.1f, Type: %d, Weak vs: %d]" % [stats.name, stats.hp, stats.max_hp, stats.attack_power, stats.speed, stats.class_type, stats.weak_against])
 	update_health_bar()
 	Global.health_bars_toggled.connect(_on_health_bars_toggled)
 	health_bar.visible = Global.show_health_bars
@@ -111,13 +111,16 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_0:  # Random color on 0 key
 			if is_hovered or is_selected:
 				var material = sprite.material as ShaderMaterial
-				material.set_shader_parameter("modulate", colors[randi() % colors.size()])
+				var idx = randi() % colors.size();
+				material.set_shader_parameter("modulate", colors[idx]);
+				team_color_index = idx;
 		else:
 			var key_num = event.keycode - KEY_1
 			if key_num >= 0 and key_num < colors.size():
 				if is_hovered or is_selected:
 					var material = sprite.material as ShaderMaterial
-					material.set_shader_parameter("modulate", colors[key_num])
+					material.set_shader_parameter("modulate", colors[key_num]);
+					team_color_index = key_num;
 
 func _physics_process(delta: float) -> void:
 	if is_dragging:
@@ -323,33 +326,31 @@ func handle_peaceful() -> void:
 	var same_team_center = Vector2.ZERO
 	var count = 0
 	var max_force = 100.0
-	var repulsion_distance = 10.0
+	var min_distance = 15.0  # Minimum distance before we stop moving
 	
-	# Debug print to check group size
-	#print("Finding teammates from group size: ", get_tree().get_nodes_in_group("mans").size())
-	
+	# Find center of team
 	for mans in get_tree().get_nodes_in_group("mans"):
 		if mans != self and !mans.is_dead() and mans.team_color_index == team_color_index:
 			same_team_center += mans.position
 			count += 1
-			
-			# Add repulsion force if too close
-			var distance = position.distance_to(mans.position)
-			if distance < repulsion_distance:
-				var repulsion = (position - mans.position).normalized()
-				apply_central_force(repulsion * max_force * (1.0 - distance/repulsion_distance))
 	
 	if count > 0:
 		same_team_center /= count
-		var direction = (same_team_center - position).normalized()
 		var distance_to_center = position.distance_to(same_team_center)
 		
-		# Stronger attraction force when far from center
-		var attraction_force = max_force * (distance_to_center / 100.0)
-		attraction_force = min(attraction_force, max_force)
-		
-		# Apply attraction force
-		apply_central_force(direction * attraction_force * stats.speed)
+		# Only move if we're too far from the center
+		if distance_to_center > min_distance:
+			var direction = (same_team_center - position).normalized()
+			
+			# Stronger attraction force when far from center
+			var attraction_force = max_force * (distance_to_center / 100.0)
+			attraction_force = min(attraction_force, max_force)
+			
+			# Apply attraction force
+			apply_central_force(direction * attraction_force * stats.speed)
+		else:
+			# If we're close enough, dampen the movement
+			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.1)
 	
 	apply_edge_avoidance()
 
