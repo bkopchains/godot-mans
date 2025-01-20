@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3 uid="uid://mnfdhbupe4uv"]
+
+[ext_resource type="Script" path="res://scenes/flag.gd" id="1_c281l"]
+[ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="2_bvdrm"]
+[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/flag.png" id="3_ucuco"]
+
+[sub_resource type="Gradient" id="Gradient_op4qa"]
+colors = PackedColorArray(0, 0, 0, 0.447059, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_kwrrn"]
+gradient = SubResource("Gradient_op4qa")
+width = 8
+height = 4
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+metadata/_snap_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_msw2u"]
+resource_local_to_scene = true
+shader = ExtResource("2_bvdrm")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/enabled = false
+shader_parameter/modulate = Color(1, 1, 1, 1)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yod3x"]
+radius = 3.0
+height = 8.0
+
+[node name="flag" type="Area2D"]
+linear_damp = 1.0
+script = ExtResource("1_c281l")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+position = Vector2(0, 4)
+texture = SubResource("GradientTexture2D_kwrrn")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_msw2u")
+position = Vector2(-1, -2)
+texture = ExtResource("3_ucuco")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_yod3x")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

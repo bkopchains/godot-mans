@@ -1,6 +1,7 @@
 extends Node2D
 
 @export var mans_scene: PackedScene = preload("res://scenes/mans.tscn")
+@export var flag_scene: PackedScene = preload("res://scenes/flag.tscn")
 
 # Add these class preloads
 var class_resources = [
@@ -15,6 +16,7 @@ var selection_start: Vector2
 var is_selecting: bool = false
 var selected_mans: Array[Mans] = []
 var is_group_dragging: bool = false
+var team_flags: Dictionary = {}  # team_index -> Flag
 
 func _draw() -> void:
 	if is_selecting:
@@ -103,6 +105,17 @@ func _unhandled_input(event: InputEvent) -> void:
 			new_mans.stats = random_class.duplicate()
 			
 			add_child(new_mans)
+			
+			# Check if team needs a flag
+			var team_has_flag = false
+			for flag in get_tree().get_nodes_in_group("flags"):
+				if flag.team_color_index == new_mans.team_color_index:
+					team_has_flag = true
+					break
+			
+			if !team_has_flag:
+				var flag = spawn_flag(new_mans.team_color_index, new_mans.global_position)
+				flag.attach_to(new_mans)
 			get_viewport().set_input_as_handled()
 	
 	elif event is InputEventMouseMotion:
@@ -122,3 +135,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	elif event.is_action_pressed("toggle_health"):
 		Global.toggle_health_bars()
+
+func spawn_flag(team_index: int, position: Vector2) -> Flag:
+	var flag = flag_scene.instantiate() as Flag
+	flag.team_color_index = team_index
+	flag.global_position = position
+	add_child(flag)
+	team_flags[team_index] = flag
+	return flag
+
+# Helper function for mans to find their team's flag
+func get_team_flag(team_index: int) -> Flag:
+	return team_flags.get(team_index)

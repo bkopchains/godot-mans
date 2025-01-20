@@ -47,6 +47,10 @@ const LUNGE_DAMP: float = 0.75     # Reduced damping during lunges
 const SCREEN_MARGIN: float = 10.0  # Distance from edge to start avoiding
 const EDGE_FORCE: float = 200.0     # Force to apply when near edges
 
+# Add near other variables
+var carried_flag: Flag = null
+var team_flag_carrier: Mans = null  # Track who has our flag
+
 func _ready() -> void:
 	add_to_group("mans")
 	prev_position = position
@@ -65,6 +69,11 @@ func _ready() -> void:
 	update_health_bar()
 	Global.health_bars_toggled.connect(_on_health_bars_toggled)
 	health_bar.visible = Global.show_health_bars
+
+	var our_flag = get_parent().get_team_flag(team_color_index)
+	if our_flag:
+		our_flag.flag_dropped.connect(_on_team_flag_dropped)
+		our_flag.flag_captured.connect(_on_team_flag_captured)
 
 func update_outline() -> void:
 	var material = sprite.material as ShaderMaterial
@@ -224,7 +233,10 @@ func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
 		final_damage = int(float(amount) * WEAKNESS_MULTIPLIER)
 	stats.hp = max(0, stats.hp - final_damage)
 	update_health_bar()
+	
 	if is_dead():
+		if carried_flag:
+			carried_flag.detach()
 		remove_from_group("mans")
 		queue_free()
 
@@ -270,11 +282,28 @@ func handle_combat() -> void:
 		
 	# Only find target and start lunge if we're not currently lunging
 	if !is_lunging:
+		var our_flag = get_parent().get_team_flag(team_color_index)
+		
+		# First priority: Get back our dropped flag
+		if our_flag and !our_flag.carrier and !carried_flag:
+			current_target = null
+			var direction = (our_flag.position - position).normalized()
+			apply_central_force(direction * LUNGE_FORCE * stats.speed)
+			return
+			
+		# Second priority: Chase enemy carrying our flag
+		if team_flag_carrier and team_flag_carrier.team_color_index != team_color_index:
+			current_target = team_flag_carrier
+			if !lunge_cooldown:
+				start_lunge()
+			return
+			
+		# Third priority: Normal combat targeting
 		if !current_target or current_target.is_dead():
 			find_nearest_enemy()
 			if !current_target:
 				return
-		
+			
 		if !lunge_cooldown:
 			start_lunge()
 	
@@ -285,6 +314,20 @@ func find_nearest_enemy() -> void:
 	var shortest_distance = INF
 	current_target = null
 	
+	# First check for dropped flags
+	if !carried_flag:  # Only look for flags if not carrying one
+		for flag in get_tree().get_nodes_in_group("flags"):
+			if !flag.carrier:  # Flag is dropped
+				var distance = position.distance_to(flag.position)
+				if distance < shortest_distance:
+					shortest_distance = distance
+					current_target = null  # Clear enemy target
+					# Move towards flag
+					var direction = (flag.position - position).normalized()
+					apply_central_force(direction * LUNGE_FORCE * stats.speed)
+					return
+	
+	# If no dropped flags found, look for enemies
 	for mans in get_tree().get_nodes_in_group("mans"):
 		if mans != self and mans.team_color_index != team_color_index and !mans.is_dead():
 			var distance = position.distance_to(mans.position)
@@ -323,33 +366,38 @@ func handle_peaceful() -> void:
 	if is_dead():
 		return
 		
-	var same_team_center = Vector2.ZERO
+	var target_pos = Vector2.ZERO
 	var count = 0
 	var max_force = 100.0
 	var min_distance = 15.0  # Minimum distance before we stop moving
 	
-	# Find center of team
-	for mans in get_tree().get_nodes_in_group("mans"):
-		if mans != self and !mans.is_dead() and mans.team_color_index == team_color_index:
-			same_team_center += mans.position
-			count += 1
+	# Get our team's flag
+	var our_flag = get_parent().get_team_flag(team_color_index)
+	
+	if our_flag:
+		if our_flag.carrier:
+			# Follow flag carrier
+			target_pos = our_flag.carrier.position
+			count = 1
+		else:
+			# Go pick up dropped flag
+			if !our_flag.carrier and !carried_flag:
+				target_pos = our_flag.position
+				count = 1
+			
+			# If we're close enough, pick it up
+			if position.distance_to(target_pos) < 10:
+				our_flag.attach_to(self)
 	
 	if count > 0:
-		same_team_center /= count
-		var distance_to_center = position.distance_to(same_team_center)
+		var direction = (target_pos - position).normalized()
+		var distance = position.distance_to(target_pos)
 		
-		# Only move if we're too far from the center
-		if distance_to_center > min_distance:
-			var direction = (same_team_center - position).normalized()
-			
-			# Stronger attraction force when far from center
-			var attraction_force = max_force * (distance_to_center / 100.0)
+		if distance > min_distance:
+			var attraction_force = max_force * (distance / 100.0)
 			attraction_force = min(attraction_force, max_force)
-			
-			# Apply attraction force
 			apply_central_force(direction * attraction_force * stats.speed)
 		else:
-			# If we're close enough, dampen the movement
 			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.1)
 	
 	apply_edge_avoidance()
@@ -380,3 +428,19 @@ func _on_lunge_timer_timeout() -> void:
 
 func _on_health_bars_toggled(enabled: bool) -> void:
 	health_bar.visible = enabled
+
+# Add helper function to find flags
+func get_all_flags() -> Array[Flag]:
+	return get_tree().get_nodes_in_group("flags") as Array[Flag]
+
+func _on_team_flag_dropped(_flag: Flag) -> void:
+	team_flag_carrier = null
+
+func _on_team_flag_captured(_flag: Flag, by_team: int) -> void:
+	team_flag_carrier = _flag.carrier
+
+func _exit_tree() -> void:
+	var our_flag = get_parent().get_team_flag(team_color_index)
+	if our_flag:
+		our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
+		our_flag.flag_captured.disconnect(_on_team_flag_captured)
