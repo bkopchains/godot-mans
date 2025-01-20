@@ -235,6 +235,15 @@ func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
 	update_health_bar()
 	
 	if is_dead():
+		# First disconnect signals
+		var our_flag = get_parent().get_team_flag(team_color_index)
+		if our_flag:
+			if our_flag.flag_dropped.is_connected(_on_team_flag_dropped):
+				our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
+			if our_flag.flag_captured.is_connected(_on_team_flag_captured):
+				our_flag.flag_captured.disconnect(_on_team_flag_captured)
+		
+		# Then handle flag detachment and cleanup
 		if carried_flag:
 			carried_flag.detach()
 		remove_from_group("mans")
@@ -369,25 +378,20 @@ func handle_peaceful() -> void:
 	var target_pos = Vector2.ZERO
 	var count = 0
 	var max_force = 100.0
-	var min_distance = 15.0  # Minimum distance before we stop moving
+	var min_distance = 15.0
 	
-	# Get our team's flag
 	var our_flag = get_parent().get_team_flag(team_color_index)
 	
 	if our_flag:
 		if our_flag.carrier:
-			# Follow flag carrier
-			target_pos = our_flag.carrier.position
+			# Calculate grid formation position
+			target_pos = calculate_grid_position(our_flag)
 			count = 1
 		else:
-			# Go pick up dropped flag
-			if !our_flag.carrier and !carried_flag:
+			# Go pick up dropped flag if we're not already carrying one
+			if !carried_flag:
 				target_pos = our_flag.position
 				count = 1
-			
-			# If we're close enough, pick it up
-			if position.distance_to(target_pos) < 10:
-				our_flag.attach_to(self)
 	
 	if count > 0:
 		var direction = (target_pos - position).normalized()
@@ -444,3 +448,34 @@ func _exit_tree() -> void:
 	if our_flag:
 		our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
 		our_flag.flag_captured.disconnect(_on_team_flag_captured)
+
+func calculate_grid_position(our_flag: Flag) -> Vector2:
+	# Get all team members
+	var team_members = []
+	for mans in get_tree().get_nodes_in_group("mans"):
+		if mans.team_color_index == team_color_index:
+			team_members.append(mans)
+	
+	var total_mans = team_members.size()
+	if total_mans <= 1:
+		return our_flag.position
+	
+	# Calculate grid dimensions with 3:2 ratio
+	var grid_width = ceil(sqrt(total_mans * 1.5))  # 3:2 ratio
+	var grid_height = ceil(float(total_mans) / grid_width)
+	
+	# Find this mans's position in the grid
+	var index = team_members.find(self)
+	var grid_x = index % int(grid_width)
+	var grid_y = index / int(grid_width)
+	
+	# Calculate spacing based on mans size
+	var spacing = 15.0  # Adjust this value to change density of formation
+	
+	# Calculate offset from flag carrier
+	var offset = Vector2(
+		grid_x * spacing,
+		grid_y * spacing
+	)
+	
+	return our_flag.position + offset
