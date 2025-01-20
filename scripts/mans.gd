@@ -376,33 +376,20 @@ func handle_peaceful() -> void:
 		return
 		
 	var target_pos = Vector2.ZERO
-	var count = 0
-	var max_force = 100.0
-	var min_distance = 15.0
-	
 	var our_flag = get_parent().get_team_flag(team_color_index)
 	
-	if our_flag:
-		if our_flag.carrier:
-			# Calculate grid formation position
-			target_pos = calculate_grid_position(our_flag)
-			count = 1
-		else:
-			# Go pick up dropped flag if we're not already carrying one
-			if !carried_flag:
-				target_pos = our_flag.position
-				count = 1
-	
-	if count > 0:
-		var direction = (target_pos - position).normalized()
-		var distance = position.distance_to(target_pos)
+	if our_flag and our_flag.carrier:
+		target_pos = calculate_grid_position(our_flag)
+		var direction = (target_pos - position)
+		var distance = direction.length()
 		
-		if distance > min_distance:
-			var attraction_force = max_force * (distance / 100.0)
-			attraction_force = min(attraction_force, max_force)
-			apply_central_force(direction * attraction_force * stats.speed)
+		if distance > 2.0:  # Increased threshold to reduce jitter
+			direction = direction.normalized()
+			# Smoother movement
+			linear_velocity = linear_velocity.lerp(direction * stats.speed * 50, 0.2)
 		else:
-			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.1)
+			# Gradual stop when close to position
+			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.3)
 	
 	apply_edge_avoidance()
 
@@ -450,32 +437,45 @@ func _exit_tree() -> void:
 		our_flag.flag_captured.disconnect(_on_team_flag_captured)
 
 func calculate_grid_position(our_flag: Flag) -> Vector2:
-	# Get all team members
 	var team_members = []
 	for mans in get_tree().get_nodes_in_group("mans"):
 		if mans.team_color_index == team_color_index:
 			team_members.append(mans)
 	
+	# Find flag carrier
+	var carrier_pos: Vector2
+	var carrier_index: int = -1
+	for mans in team_members:
+		if mans.carried_flag == our_flag:
+			carrier_pos = mans.position
+			carrier_index = team_members.find(mans)
+			if mans == self:  # If we're the carrier, stay at origin
+				return carrier_pos
+			break
+	
+	if carrier_pos == Vector2.ZERO:
+		return our_flag.position
+		
 	var total_mans = team_members.size()
 	if total_mans <= 1:
-		return our_flag.position
+		return carrier_pos
 	
-	# Calculate grid dimensions with 3:2 ratio
-	var grid_width = ceil(sqrt(total_mans * 1.5))  # 3:2 ratio
-	var grid_height = ceil(float(total_mans) / grid_width)
-	
-	# Find this mans's position in the grid
+	var grid_width = ceil(sqrt(total_mans))
 	var index = team_members.find(self)
-	var grid_x = index % int(grid_width)
-	var grid_y = index / int(grid_width)
 	
-	# Calculate spacing based on mans size
-	var spacing = 15.0  # Adjust this value to change density of formation
+	# Calculate position in grid, accounting for carrier being at 0,0
+	if index == carrier_index:
+		return carrier_pos
+	elif index < carrier_index:
+		index += 1  # Shift up by one to leave 0,0 for carrier
 	
-	# Calculate offset from flag carrier
+	var grid_x = float((index) % int(grid_width))
+	var grid_y = floor(float(index) / grid_width)
+	
+	var spacing = 15.0
 	var offset = Vector2(
 		grid_x * spacing,
 		grid_y * spacing
 	)
 	
-	return our_flag.position + offset
+	return carrier_pos + offset
