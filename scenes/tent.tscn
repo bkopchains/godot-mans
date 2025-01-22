@@ -1,0 +1,61 @@
+[gd_scene load_steps=9 format=3 uid="uid://cllhf7apq42rx"]
+
+[ext_resource type="Script" path="res://scripts/tent.gd" id="1_4775a"]
+[ext_resource type="Texture2D" uid="uid://ckurweh55ijvj" path="res://assets/sprites/Tent.png" id="1_c1uid"]
+[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/flag.png" id="2_pehq3"]
+[ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="3_y8eeo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b07lq"]
+resource_local_to_scene = true
+shader = ExtResource("3_y8eeo")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/enabled = false
+shader_parameter/modulate = Color(1, 1, 1, 1)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_widhu"]
+radius = 2.0
+height = 20.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xa45a"]
+radius = 6.0
+height = 24.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w8tcr"]
+size = Vector2(30, 16)
+
+[node name="Tent" type="Node2D"]
+script = ExtResource("1_4775a")
+
+[node name="FlagSprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_b07lq")
+position = Vector2(-2, 0)
+texture = ExtResource("2_pehq3")
+offset = Vector2(0, -18)
+
+[node name="TentSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_c1uid")
+offset = Vector2(0, -10)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(0, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 8)
+rotation = -1.57079
+shape = SubResource("CapsuleShape2D_widhu")
+
+[node name="DropZone" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DropZone"]
+position = Vector2(0, -1)
+rotation = 1.57079
+shape = SubResource("CapsuleShape2D_xa45a")
+
+[node name="SpawnZone" type="Area2D" parent="."]
+
+[node name="SpawnShape" type="CollisionShape2D" parent="SpawnZone"]
+position = Vector2(0, 14)
+shape = SubResource("RectangleShape2D_w8tcr")
+
+[connection signal="area_entered" from="DropZone" to="." method="_on_drop_zone_area_entered"]

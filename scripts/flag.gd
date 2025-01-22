@@ -3,6 +3,7 @@ extends Area2D
 
 @onready var sprite: Sprite2D = $Sprite
 @onready var shadow: Sprite2D = $Shadow
+@onready var pickup_cooldown: Timer = $PickupCooldown
 
 var colors = [
 	Color(1, 0.3, 0.3),  # Red
@@ -29,9 +30,9 @@ func _ready() -> void:
 
 func update_color() -> void:
 	if sprite:
-		var material = sprite.material as ShaderMaterial
-		if material:
-			material.set_shader_parameter("modulate", colors[team_color_index])
+		var mat = sprite.material as ShaderMaterial
+		if mat:
+			mat.set_shader_parameter("modulate", colors[team_color_index])
 
 func _physics_process(_delta: float) -> void:
 	if carrier:
@@ -43,14 +44,15 @@ func _physics_process(_delta: float) -> void:
 			detach()
 
 func attach_to(mans: Mans) -> void:
-	if carrier:
-		carrier.carried_flag = null
-	carrier = mans
-	mans.carried_flag = self
-	shadow.visible = false
-	
-	if mans.team_color_index != team_color_index:
-		flag_captured.emit(self, mans.team_color_index)
+	if(pickup_cooldown.is_stopped()):
+		if carrier:
+			carrier.carried_flag = null
+		carrier = mans
+		mans.carried_flag = self
+		shadow.visible = false
+		
+		if mans.team_color_index != team_color_index:
+			flag_captured.emit(self, mans.team_color_index)
 
 func detach() -> void:
 	if carrier and is_instance_valid(carrier):
@@ -58,6 +60,7 @@ func detach() -> void:
 	carrier = null
 	shadow.visible = true
 	flag_dropped.emit(self)
+	pickup_cooldown.start();
 
 # Called when an enemy mans attacks the flag
 func attack(attacker: Mans) -> void:

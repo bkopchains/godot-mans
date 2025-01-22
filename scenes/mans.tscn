@@ -37,10 +37,11 @@ shader_parameter/enabled = false
 shader_parameter/modulate = Color(1, 1, 1, 1)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yod3x"]
-radius = 3.0
-height = 8.0
+radius = 2.0
+height = 4.0
 
 [node name="mans" type="RigidBody2D"]
+y_sort_enabled = true
 physics_material_override = SubResource("PhysicsMaterial_8kqxp")
 gravity_scale = 0.0
 lock_rotation = true
@@ -73,17 +74,19 @@ texture = SubResource("GradientTexture2D_kwrrn")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_msw2u")
-position = Vector2(0, -4)
+position = Vector2(0, 4)
 texture = ExtResource("2_psv55")
-offset = Vector2(0, 4)
+offset = Vector2(0, -4)
 hframes = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
 shape = SubResource("CapsuleShape2D_yod3x")
 
 [node name="Attack Timer" type="Timer" parent="."]
 
 [node name="HealthBar" type="Node2D" parent="."]
+z_index = 10
 position = Vector2(0, -7)
 
 [node name="Fill" type="ColorRect" parent="HealthBar"]
@@ -91,6 +94,7 @@ offset_left = -5.0
 offset_right = 5.0
 offset_bottom = 1.0
 color = Color(0.2, 0.8, 0.2, 0.8)
+metadata/_edit_use_anchors_ = true
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_body_entered"]
 [connection signal="input_event" from="Area2D" to="." method="_on_input_event"]

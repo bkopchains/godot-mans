@@ -44,8 +44,4 @@ texture = ExtResource("3_ucuco")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_yod3x")
 
-[node name="PickupCooldown" type="Timer" parent="."]
-wait_time = 2.0
-one_shot = true
-
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

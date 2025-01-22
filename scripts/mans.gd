@@ -8,20 +8,14 @@ extends RigidBody2D
 @onready var health_fill: ColorRect = $HealthBar/Fill
 @onready var health_bar: Node2D = $HealthBar
 
+@export var game: Game;
+
 var is_dragging: bool = false
 var is_selected: bool = false
 var is_hovered: bool = false
 var drag_offset: Vector2
 var prev_position: Vector2
 var rotation_velocity: float = 0.0
-
-var colors = [
-	Color(1, 0.3, 0.3),  # Red
-	Color(0.3, 0.3, 1),  # Blue
-	Color(0.3, 1, 0.3),  # Green
-	Color(1, 1, 0.3),    # Yellow
-	Color(1, 0.3, 1),    # Purple
-]
 
 # Reference to the class data
 @export var stats: MansClass
@@ -54,14 +48,14 @@ var team_flag_carrier: Mans = null  # Track who has our flag
 func _ready() -> void:
 	add_to_group("mans")
 	prev_position = position
-	var material = sprite.material as ShaderMaterial
+	var mat = sprite.material as ShaderMaterial
 	
 	# Match sprite frame to class type
 	sprite.frame = stats.class_type
 	
 	# Set color based on team (using the same index system)
-	team_color_index = randi() % colors.size()
-	material.set_shader_parameter("modulate", colors[team_color_index])
+	team_color_index = randi() % Global.TEAM_COLORS.size()
+	mat.set_shader_parameter("modulate", Global.TEAM_COLORS[team_color_index])
 	
 	update_outline()
 	linear_damp = BASE_DAMP
@@ -70,17 +64,17 @@ func _ready() -> void:
 	Global.health_bars_toggled.connect(_on_health_bars_toggled)
 	health_bar.visible = Global.show_health_bars
 
-	var our_flag = get_parent().get_team_flag(team_color_index)
+	var our_flag = game.get_team_flag(team_color_index)
 	if our_flag:
 		our_flag.flag_dropped.connect(_on_team_flag_dropped)
 		our_flag.flag_captured.connect(_on_team_flag_captured)
 
 func update_outline() -> void:
-	var material = sprite.material as ShaderMaterial
-	if material:
-		material.set_shader_parameter("enabled", is_selected or is_hovered)
-		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
-		material.set_shader_parameter("outline_width", 1.0)
+	var mat = sprite.material as ShaderMaterial
+	if mat:
+		mat.set_shader_parameter("enabled", is_selected or is_hovered)
+		mat.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
+		mat.set_shader_parameter("outline_width", 1.0)
 
 func select() -> void:
 	is_selected = true
@@ -96,14 +90,19 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 			if event.pressed:
 				if is_selected:
 					# If we're part of a selection, tell main to handle group drag
-					get_parent().start_group_drag(get_global_mouse_position())
+					game.start_group_drag(get_global_mouse_position())
 				else:
 					# Otherwise just drag this mans
 					pick_up()
 					drag_offset = position - get_global_mouse_position()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			var direction = 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1
-			sprite.frame = wrapi(sprite.frame + direction, 0, 5)
+			var new_frame = wrapi(sprite.frame + direction, 0, 5)
+			sprite.frame = new_frame
+			# Update the class stats to match the new type
+			if game and game.class_resources:
+				stats = game.class_resources[new_frame].duplicate()
+				update_health_bar()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -119,19 +118,19 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed:
 		if event.keycode == KEY_0:  # Random color on 0 key
 			if is_hovered or is_selected:
-				var material = sprite.material as ShaderMaterial
-				var idx = randi() % colors.size();
-				material.set_shader_parameter("modulate", colors[idx]);
+				var mat = sprite.material as ShaderMaterial
+				var idx = randi() % Global.TEAM_COLORS.size();
+				mat.set_shader_parameter("modulate", Global.TEAM_COLORS[idx]);
 				team_color_index = idx;
 		else:
 			var key_num = event.keycode - KEY_1
-			if key_num >= 0 and key_num < colors.size():
+			if key_num >= 0 and key_num < Global.TEAM_COLORS.size():
 				if is_hovered or is_selected:
-					var material = sprite.material as ShaderMaterial
-					material.set_shader_parameter("modulate", colors[key_num]);
+					var mat = sprite.material as ShaderMaterial
+					mat.set_shader_parameter("modulate", Global.TEAM_COLORS[key_num]);
 					team_color_index = key_num;
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if is_dragging:
 		var target = get_global_mouse_position() + drag_offset
 		var direction = (target - position)
@@ -174,7 +173,7 @@ func check_off_screen() -> void:
 func pick_up():
 	is_dragging = true
 	is_hovered = true
-	sprite.position.y = -6
+	sprite.position.y = 0
 	shadow.scale = Vector2(1.5, 1.5)
 	Input.set_default_cursor_shape(Input.CURSOR_DRAG)
 	update_outline()
@@ -182,7 +181,7 @@ func pick_up():
 func put_down():
 	is_dragging = false
 	is_hovered = false
-	sprite.position.y = -4
+	sprite.position.y = 4
 	shadow.scale = Vector2(1, 1)
 	dust_particles.emitting = true;
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
@@ -204,17 +203,17 @@ func _on_mouse_exited() -> void:
 func start_drag_in_group(mouse_pos: Vector2) -> void:
 	is_dragging = true
 	is_hovered = true
-	sprite.position.y = -6
+	sprite.position.y = 0
 	shadow.scale = Vector2(1.5, 1.5)
 	drag_offset = position - mouse_pos
 	update_outline()
 
 func preview_select(enabled: bool) -> void:
-	var material = sprite.material as ShaderMaterial
-	if material:
-		material.set_shader_parameter("enabled", enabled or is_selected or is_hovered)
-		material.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
-		#material.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
+	var mat = sprite.material as ShaderMaterial
+	if mat:
+		mat.set_shader_parameter("enabled", enabled or is_selected or is_hovered)
+		mat.set_shader_parameter("outline_color", Color.WHITE if is_hovered else Global.HIGHLIGHT_COLOR)
+		#mat.set_shader_parameter("outline_width", 2.0 if enabled else 1.0)
 
 func update_health_bar() -> void:
 	if health_fill:
@@ -236,7 +235,7 @@ func take_damage(amount: int, attacker_type: MansClass.ClassType) -> void:
 	
 	if is_dead():
 		# First disconnect signals
-		var our_flag = get_parent().get_team_flag(team_color_index)
+		var our_flag = game.get_team_flag(team_color_index)
 		if our_flag:
 			if our_flag.flag_dropped.is_connected(_on_team_flag_dropped):
 				our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
@@ -291,13 +290,13 @@ func handle_combat() -> void:
 		
 	# Only find target and start lunge if we're not currently lunging
 	if !is_lunging:
-		var our_flag = get_parent().get_team_flag(team_color_index)
+		var our_flag = game.get_team_flag(team_color_index)
 		
 		# First priority: Get back our dropped flag
 		if our_flag and !our_flag.carrier and !carried_flag:
 			current_target = null
 			var direction = (our_flag.position - position).normalized()
-			apply_central_force(direction * LUNGE_FORCE * stats.speed)
+			apply_central_force(direction * LUNGE_FORCE * (1.0/stats.speed))
 			return
 			
 		# Second priority: Chase enemy carrying our flag
@@ -333,7 +332,7 @@ func find_nearest_enemy() -> void:
 					current_target = null  # Clear enemy target
 					# Move towards flag
 					var direction = (flag.position - position).normalized()
-					apply_central_force(direction * LUNGE_FORCE * stats.speed)
+					apply_central_force(direction * LUNGE_FORCE * (1.0/stats.speed))
 					return
 	
 	# If no dropped flags found, look for enemies
@@ -376,7 +375,7 @@ func handle_peaceful() -> void:
 		return
 		
 	var target_pos = Vector2.ZERO
-	var our_flag = get_parent().get_team_flag(team_color_index)
+	var our_flag = game.get_team_flag(team_color_index)
 	
 	if our_flag and our_flag.carrier:
 		target_pos = calculate_grid_position(our_flag)
@@ -386,7 +385,7 @@ func handle_peaceful() -> void:
 		if distance > 2.0:  # Increased threshold to reduce jitter
 			direction = direction.normalized()
 			# Smoother movement
-			linear_velocity = linear_velocity.lerp(direction * stats.speed * 50, 0.2)
+			linear_velocity = linear_velocity.lerp(direction * (1.0/stats.speed) * 50, 0.2)
 		else:
 			# Gradual stop when close to position
 			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.3)
@@ -403,7 +402,7 @@ func start_lunge() -> void:
 	# Calculate direction to target
 	var direction = (current_target.position - position).normalized()
 	# Apply a single strong impulse
-	apply_central_impulse(direction * LUNGE_FORCE * stats.speed)
+	apply_central_impulse(direction * LUNGE_FORCE * (1.0/stats.speed))
 	dust_particles.restart();
 	dust_particles.emitting = true;
 	
@@ -427,11 +426,11 @@ func get_all_flags() -> Array[Flag]:
 func _on_team_flag_dropped(_flag: Flag) -> void:
 	team_flag_carrier = null
 
-func _on_team_flag_captured(_flag: Flag, by_team: int) -> void:
+func _on_team_flag_captured(_flag: Flag, _by_team: int) -> void:
 	team_flag_carrier = _flag.carrier
 
 func _exit_tree() -> void:
-	var our_flag = get_parent().get_team_flag(team_color_index)
+	var our_flag = game.get_team_flag(team_color_index)
 	if our_flag:
 		our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
 		our_flag.flag_captured.disconnect(_on_team_flag_captured)
