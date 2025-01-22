@@ -30,7 +30,9 @@ func _on_drop_zone_area_entered(area: Area2D) -> void:
 			flag.carrier.heal(50);
 			flag.detach();
 			game.capture_flag(team_color_index, flag);
-			(game.team_bases[flag.team_color_index] as Tent).spawn_flag();
+			# Defer the spawn on the correct team's tent
+			var enemy_tent = game.team_bases[flag.team_color_index] as Tent;
+			enemy_tent.call_deferred("spawn_flag");
 			
 		
 func spawn_flag() -> void:
