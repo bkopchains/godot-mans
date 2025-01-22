@@ -4,13 +4,13 @@ const HIGHLIGHT_COLOR = Color.YELLOW
 const TEAM_COLORS = [
 	Color(1, 0.3, 0.3),  # Red
 	Color(0.3, 0.3, 1),  # Blue
-	#Color(0.3, 1, 0.3),  # Green
+	Color(0.3, 1, 0.3),  # Green
 	#Color(1, 1, 0.3),    # Yellow
 	#Color(1, 0.3, 1),    # Purple
 ]
 
 var battle_mode_enabled: bool = false
-var show_health_bars: bool = true
+var show_health_bars: bool = false
 
 signal battle_mode_toggled(enabled: bool)
 signal health_bars_toggled(enabled: bool)

@@ -27,6 +27,7 @@ func _on_drop_zone_area_entered(area: Area2D) -> void:
 		var flag = (area as Flag);
 		if flag.team_color_index != team_color_index:
 			# Capture dat flag
+			flag.carrier.heal(50);
 			flag.detach();
 			game.capture_flag(team_color_index, flag);
 			(game.team_bases[flag.team_color_index] as Tent).spawn_flag();

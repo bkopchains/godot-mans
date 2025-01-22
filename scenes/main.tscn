@@ -124,7 +124,7 @@ height = 24.0
 radius = 3.0
 height = 22.0
 
-[sub_resource type="Resource" id="Resource_bo5pe"]
+[sub_resource type="Resource" id="Resource_hee2c"]
 resource_local_to_scene = true
 script = ExtResource("5_l0a0j")
 name = "Man"
@@ -226,10 +226,10 @@ shape = SubResource("CapsuleShape2D_kvdmr")
 
 [node name="mans" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("1_foyq2")]
 game = NodePath("../..")
-stats = SubResource("Resource_bo5pe")
+stats = SubResource("Resource_hee2c")
 
 [node name="Tree" type="StaticBody2D" parent="GameElements"]
-position = Vector2(-80, -38)
+position = Vector2(-2, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="GameElements/Tree"]
 texture = ExtResource("7_odruo")
@@ -239,27 +239,21 @@ offset = Vector2(-7, -30)
 rotation = 1.57079
 shape = SubResource("CapsuleShape2D_5dv8f")
 
-[node name="Tree2" type="StaticBody2D" parent="GameElements"]
-position = Vector2(86, 42)
-
-[node name="Sprite2D" type="Sprite2D" parent="GameElements/Tree2"]
-texture = ExtResource("7_odruo")
-offset = Vector2(-7, -30)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameElements/Tree2"]
-rotation = 1.57079
-shape = SubResource("CapsuleShape2D_5dv8f")
-
 [node name="Red Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
 y_sort_enabled = true
-position = Vector2(-132, -33)
+position = Vector2(-135, -63)
 game = NodePath("../..")
 
 [node name="Blue Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
 y_sort_enabled = true
-position = Vector2(137, 48)
+position = Vector2(133, 58)
 game = NodePath("../..")
 team_color_index = 1
+
+[node name="Green Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
+position = Vector2(-28, 58)
+game = NodePath("../..")
+team_color_index = 2
 
 [node name="SelectionDrawer" type="Node2D" parent="."]
 z_index = 999

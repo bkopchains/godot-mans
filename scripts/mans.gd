@@ -26,22 +26,21 @@ const WEAKNESS_MULTIPLIER: float = 2
 # Add these near the top with other variables
 var team_color_index: int
 var current_target: Mans = null
-var lunge_cooldown: bool = false
 var attack_cooldown: bool = false
+
+# Battle-related constants
+const LUNGE_FORCE: float = 50.0   # Force for quick lunges
+const LUNGE_DURATION: float = 1.0  # How long each lunge movement lasts
+const BASE_DAMP: float = 1.0      # Normal linear damping
+const LUNGE_DAMP: float = 0.75    # Reduced damping during lunges
 const ATTACK_FORCE: float = 25.0
+const SCREEN_MARGIN: float = 10.0  # Distance from edge to start avoiding
+const EDGE_FORCE: float = 200.0    # Force to apply when near edges
+
+# Battle state
+var is_lunging: bool = false
 
 # Add these variables near the top
-var is_lunging: bool = false
-const LUNGE_DURATION: float = 1  # How long each lunge movement lasts
-const LUNGE_FORCE: float = 50.0   # Increased force for quick lunges
-const BASE_DAMP: float = 1.0      # Normal linear damping
-const LUNGE_DAMP: float = 0.75     # Reduced damping during lunges
-
-# Add these constants near the top
-const SCREEN_MARGIN: float = 10.0  # Distance from edge to start avoiding
-const EDGE_FORCE: float = 200.0     # Force to apply when near edges
-
-# Add near other variables
 var carried_flag: Flag = null
 var team_flag_carrier: Mans = null  # Track who has our flag
 
@@ -59,15 +58,21 @@ func _ready() -> void:
 	
 	update_outline()
 	linear_damp = BASE_DAMP
-	#print("Stats: [Name: %s, HP: %d/%d, Attack: %d, Speed: %.1f, Type: %d, Weak vs: %d]" % [stats.name, stats.hp, stats.max_hp, stats.attack_power, stats.speed, stats.class_type, stats.weak_against])
 	update_health_bar()
 	Global.health_bars_toggled.connect(_on_health_bars_toggled)
 	health_bar.visible = Global.show_health_bars
 
+	# Connect flag signals if flag exists
+	connect_flag_signals()
+
+func connect_flag_signals() -> void:
 	var our_flag = game.get_team_flag(team_color_index)
 	if our_flag:
-		our_flag.flag_dropped.connect(_on_team_flag_dropped)
-		our_flag.flag_captured.connect(_on_team_flag_captured)
+		# Only connect if not already connected
+		if !our_flag.flag_dropped.is_connected(_on_team_flag_dropped):
+			our_flag.flag_dropped.connect(_on_team_flag_dropped)
+		if !our_flag.flag_captured.is_connected(_on_team_flag_captured):
+			our_flag.flag_captured.connect(_on_team_flag_captured)
 
 func update_outline() -> void:
 	var mat = sprite.material as ShaderMaterial
@@ -288,35 +293,59 @@ func handle_combat() -> void:
 	if is_dead():
 		return
 		
-	# Only find target and start lunge if we're not currently lunging
 	if !is_lunging:
-		var our_flag = game.get_team_flag(team_color_index)
+		var target_pos = get_battle_target()
 		
-		# First priority: Get back our dropped flag
-		if our_flag and !our_flag.carrier and !carried_flag:
-			current_target = null
-			var direction = (our_flag.position - position).normalized()
-			apply_central_force(direction * LUNGE_FORCE * (1.0/stats.speed))
-			return
-			
-		# Second priority: Chase enemy carrying our flag
-		if team_flag_carrier and team_flag_carrier.team_color_index != team_color_index:
-			current_target = team_flag_carrier
-			if !lunge_cooldown:
-				start_lunge()
-			return
-			
-		# Third priority: Normal combat targeting
-		if !current_target or current_target.is_dead():
-			find_nearest_enemy()
-			if !current_target:
-				return
-			
-		if !lunge_cooldown:
-			start_lunge()
+		# If we have a valid target position different from our current position
+		if target_pos != position:
+			var direction = (target_pos - position).normalized()
+			if !is_lunging:
+				start_lunge(target_pos)
 	
-	# Only apply edge avoidance
 	apply_edge_avoidance()
+
+func get_battle_target() -> Vector2:
+	# Priority 1: If carrying enemy flag, head to own base
+	if carried_flag:
+		var own_tent = get_own_tent()
+		if own_tent:
+			return own_tent.global_position
+	
+	# Priority 2: Get our dropped flag
+	var our_flag = game.get_team_flag(team_color_index)
+	if our_flag and !our_flag.carrier and !carried_flag:
+		return our_flag.position
+	
+	# Priority 3: Chase enemy with our flag
+	if team_flag_carrier and team_flag_carrier.team_color_index != team_color_index:
+		return team_flag_carrier.position
+	
+	# Priority 4: Split between flag capture and combat based on class
+	if should_chase_flag():
+		# Look for enemy flag to capture
+		for flag in get_all_flags():
+			if flag.team_color_index != team_color_index and \
+			(!flag.carrier or (flag.carrier and flag.carrier.team_color_index != team_color_index)):
+				return flag.position
+			
+		# spawn camping
+		#var enemy_bases = game.team_bases.values().filter(func(base): return base.team_color_index != team_color_index)
+		#if enemy_bases.size() > 0:
+			#return enemy_bases.pick_random().global_position
+	
+	# Priority 5: Normal combat - find nearest enemy
+	if !current_target or current_target.is_dead():
+		find_nearest_enemy()
+	if current_target:
+		return current_target.position
+	
+	return position
+
+func should_chase_flag() -> bool:
+	# DOG and BABY are the fastest units, best suited for flag capture
+	# BRUTE and WIZARD are slower and might focus more on combat
+	return stats.class_type in [MansClass.ClassType.DOG, MansClass.ClassType.BABY] and \
+		   randf() < 0.7  # 70% chance for eligible classes to chase flag
 
 func find_nearest_enemy() -> void:
 	var shortest_distance = INF
@@ -364,7 +393,6 @@ func _on_attack_timer_timeout() -> void:
 func _on_battle_mode_toggled(enabled: bool) -> void:
 	if !enabled:
 		current_target = null
-		lunge_cooldown = false
 		is_lunging = false
 		linear_velocity = Vector2.ZERO
 	else:
@@ -392,36 +420,37 @@ func handle_peaceful() -> void:
 	
 	apply_edge_avoidance()
 
-func start_lunge() -> void:
+func start_lunge(target_pos: Vector2) -> void:
 	is_lunging = true
-	lunge_cooldown = true
 	
 	# Reduce damping during lunge for more sliding
 	linear_damp = LUNGE_DAMP
 	
-	# Calculate direction to target
-	var direction = (current_target.position - position).normalized()
-	# Apply a single strong impulse
+	# Apply a single strong impulse toward target
+	var direction = (target_pos - position).normalized()
 	apply_central_impulse(direction * LUNGE_FORCE * (1.0/stats.speed))
-	dust_particles.restart();
-	dust_particles.emitting = true;
+	
+	# Visual feedback
+	dust_particles.restart()
+	dust_particles.emitting = true
 	
 	# Create a timer for ending the lunge
-	var lunge_timer = get_tree().create_timer(stats.speed)
+	var lunge_timer = get_tree().create_timer(LUNGE_DURATION / stats.speed)
 	lunge_timer.timeout.connect(_on_lunge_timer_timeout)
 
 func _on_lunge_timer_timeout() -> void:
 	is_lunging = false
-	lunge_cooldown = false
-	# Restore normal damping
 	linear_damp = BASE_DAMP
 
 func _on_health_bars_toggled(enabled: bool) -> void:
 	health_bar.visible = enabled
 
 # Add helper function to find flags
-func get_all_flags() -> Array[Flag]:
-	return get_tree().get_nodes_in_group("flags") as Array[Flag]
+func get_all_flags():
+	return game.team_flags.values();
+	
+func get_own_tent() -> Tent:
+	return game.team_bases[team_color_index];
 
 func _on_team_flag_dropped(_flag: Flag) -> void:
 	team_flag_carrier = null
@@ -432,8 +461,11 @@ func _on_team_flag_captured(_flag: Flag, _by_team: int) -> void:
 func _exit_tree() -> void:
 	var our_flag = game.get_team_flag(team_color_index)
 	if our_flag:
-		our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
-		our_flag.flag_captured.disconnect(_on_team_flag_captured)
+		# Only disconnect if actually connected
+		if our_flag.flag_dropped.is_connected(_on_team_flag_dropped):
+			our_flag.flag_dropped.disconnect(_on_team_flag_dropped)
+		if our_flag.flag_captured.is_connected(_on_team_flag_captured):
+			our_flag.flag_captured.disconnect(_on_team_flag_captured)
 
 func calculate_grid_position(our_flag: Flag) -> Vector2:
 	var team_members = []

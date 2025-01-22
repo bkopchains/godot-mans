@@ -103,7 +103,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			game_elements.add_child(new_mans)
 			
 			# Check if team needs a flag
-			var team_has_flag = false
 			if !team_flags.has(new_mans.team_color_index):
 				var flag = spawn_flag(new_mans.team_color_index, new_mans.global_position)
 				flag.attach_to(new_mans)
@@ -143,8 +142,8 @@ func get_team_flag(team_index: int) -> Flag:
 
 # Log a flag as captured, remove that flag from the game
 func capture_flag(team_index: int, flag: Flag) -> void:
-	team_flags.erase(team_index);
+	team_flags.erase(flag.team_color_index);
 	flag.queue_free();
 	# add 1 or initialize score
 	team_scores[team_index] = team_scores.get(team_index, 0) + 1
-	
+	print("Team %d captured flag! Score: %d" % [team_index, team_scores[team_index]]);

@@ -5,14 +5,6 @@ extends Area2D
 @onready var shadow: Sprite2D = $Shadow
 @onready var pickup_cooldown: Timer = $PickupCooldown
 
-var colors = [
-	Color(1, 0.3, 0.3),  # Red
-	Color(0.3, 0.3, 1),  # Blue
-	Color(0.3, 1, 0.3),  # Green
-	Color(1, 1, 0.3),    # Yellow
-	Color(1, 0.3, 1),    # Purple
-]
-
 var team_color_index: int = 0:
 	set(value):
 		team_color_index = value
@@ -32,7 +24,7 @@ func update_color() -> void:
 	if sprite:
 		var mat = sprite.material as ShaderMaterial
 		if mat:
-			mat.set_shader_parameter("modulate", colors[team_color_index])
+			mat.set_shader_parameter("modulate", Global.TEAM_COLORS[team_color_index])
 
 func _physics_process(_delta: float) -> void:
 	if carrier:
