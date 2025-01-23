@@ -30,10 +30,12 @@ func _physics_process(_delta: float) -> void:
 	if carrier:
 		if is_instance_valid(carrier):
 			# Follow carrier with slight offset
-			global_position = carrier.global_position + Vector2(0, -8)
+			global_position = carrier.global_position + Vector2(-4, 0)
+			rotation = carrier.sprite.rotation;
 		else:
 			# Carrier was freed, detach the flag
 			detach()
+			rotation = 0;
 
 func attach_to(mans: Mans) -> void:
 	if(pickup_cooldown.is_stopped()):

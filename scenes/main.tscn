@@ -11,7 +11,7 @@
 [ext_resource type="Script" path="res://scripts/selection_drawer.gd" id="8_5wt0j"]
 [ext_resource type="PackedScene" uid="uid://cllhf7apq42rx" path="res://scenes/tent.tscn" id="8_ys7rq"]
 
-[sub_resource type="Resource" id="Resource_6fes4"]
+[sub_resource type="Resource" id="Resource_6mj4y"]
 resource_local_to_scene = true
 script = ExtResource("5_l0a0j")
 name = "Man"
@@ -43,14 +43,16 @@ position = Vector2(-270, 136)
 position = Vector2(166, -19)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(272, -131)
 script = ExtResource("5_3f4av")
 
 [node name="GameElements" type="Node2D" parent="."]
 y_sort_enabled = true
 
 [node name="mans" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("1_foyq2")]
+position = Vector2(272, -131)
 game = NodePath("../..")
-stats = SubResource("Resource_6fes4")
+stats = SubResource("Resource_6mj4y")
 
 [node name="Tree3" parent="GameElements" instance=ExtResource("5_uydtc")]
 position = Vector2(79, 183)

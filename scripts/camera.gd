@@ -13,7 +13,7 @@ var viewport_size = Vector2.ZERO
 
 func _ready() -> void:
 	# Start at center (0,0)
-	position = Vector2.ZERO
+	#position = Vector2.ZERO
 	target_position = position
 	
 	# Get the actual viewport size

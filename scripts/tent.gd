@@ -51,8 +51,19 @@ func _on_drop_zone_area_entered(area: Area2D) -> void:
 			
 		
 func spawn_flag() -> void:
-	var spawn_point = get_random_point(spawn_shape);
-	game.spawn_flag(team_color_index, spawn_point);
+	var spawn_point = get_random_point(spawn_shape)
+	game.spawn_flag(team_color_index, spawn_point)
+	
+	# Spawn 5 defenders
+	for i in range(5):
+		var mans = game.mans_scene.instantiate() as Mans
+		mans.game = game
+		mans.team_color_index = team_color_index
+		mans.position = spawn_point + Vector2(
+			randf_range(-20, 20),
+			randf_range(-20, 20)
+		)
+		game.game_elements.add_child(mans)
 
 func get_random_point(shape_node: CollisionShape2D) -> Vector2:
 	if not shape_node or not shape_node.shape or not (shape_node.shape is RectangleShape2D):

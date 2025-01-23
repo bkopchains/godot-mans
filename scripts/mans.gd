@@ -24,7 +24,7 @@ var rotation_velocity: float = 0.0
 const WEAKNESS_MULTIPLIER: float = 2
 
 # Add these near the top with other variables
-var team_color_index: int
+var team_color_index: int = -1;
 var current_target: Mans = null
 var attack_cooldown: bool = false
 
@@ -49,11 +49,17 @@ func _ready() -> void:
 	prev_position = position
 	var mat = sprite.material as ShaderMaterial
 	
+	# Assign random class if none exists
+	if !stats:
+		var random_class = game.class_resources[randi() % game.class_resources.size()]
+		stats = random_class.duplicate()
+	
 	# Match sprite frame to class type
 	sprite.frame = stats.class_type
 	
 	# Set color based on team (using the same index system)
-	team_color_index = randi() % Global.TEAM_COLORS.size()
+	if(team_color_index < 0):
+		team_color_index = randi() % Global.TEAM_COLORS.size()
 	mat.set_shader_parameter("modulate", Global.TEAM_COLORS[team_color_index])
 	
 	update_outline()
