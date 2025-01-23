@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://4c0byphxohlb"]
+
+[ext_resource type="Texture2D" uid="uid://wcx67nhoevlb" path="res://assets/sprites/pond2.png" id="1_hpsaw"]
+
+[node name="Pond2" type="StaticBody2D"]
+position = Vector2(113, -85)
+
+[node name="Pond2Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_hpsaw")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2(6, -2)
+polygon = PackedVector2Array(-52, -2, -50, -16, -41, -28, -24, -36, -5, -39, 9, -37, 22, -31, 28, -21, 34, -7, 44, -3, 54, 8, 52, 25, 39, 32, 21, 36, -4, 35, -13, 27, -20, 20, -36, 19, -48, 10)

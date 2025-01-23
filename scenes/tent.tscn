@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cllhf7apq42rx"]
+[gd_scene load_steps=11 format=3 uid="uid://cllhf7apq42rx"]
 
 [ext_resource type="Script" path="res://scripts/tent.gd" id="1_4775a"]
 [ext_resource type="Texture2D" uid="uid://ckurweh55ijvj" path="res://assets/sprites/Tent.png" id="1_c1uid"]
 [ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/flag.png" id="2_pehq3"]
 [ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="3_y8eeo"]
+[ext_resource type="Theme" uid="uid://cse8cwubw8ant" path="res://resources/UI Theme.tres" id="5_v25iu"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_b07lq"]
 resource_local_to_scene = true
@@ -23,6 +24,11 @@ height = 26.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w8tcr"]
 size = Vector2(30, 16)
+
+[sub_resource type="Curve" id="Curve_gu3qu"]
+max_value = 4.0
+_data = [Vector2(0.5, 2.02198), 0.0, -0.617698, 0, 0, Vector2(0.735955, 2.94505), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [node name="Tent" type="Node2D"]
 script = ExtResource("1_4775a")
@@ -56,5 +62,42 @@ shape = SubResource("CapsuleShape2D_xa45a")
 [node name="SpawnShape" type="CollisionShape2D" parent="SpawnZone"]
 position = Vector2(0, 14)
 shape = SubResource("RectangleShape2D_w8tcr")
+
+[node name="ScoreLabel" type="RichTextLabel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -33.0
+offset_right = 3.0
+offset_bottom = -23.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_v25iu")
+text = "0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="Fireworks" type="CPUParticles2D" parent="."]
+position = Vector2(0, -18)
+emitting = false
+amount = 32
+one_shot = true
+explosiveness = 1.0
+randomness = 0.45
+emission_shape = 1
+emission_sphere_radius = 7.66
+direction = Vector2(0, -1)
+gravity = Vector2(0, 50)
+initial_velocity_min = 50.0
+initial_velocity_max = 50.0
+angular_velocity_min = -2000.0
+angular_velocity_max = 2000.0
+radial_accel_min = -1.9
+radial_accel_max = 56.57
+scale_amount_curve = SubResource("Curve_gu3qu")
 
 [connection signal="area_entered" from="DropZone" to="." method="_on_drop_zone_area_entered"]

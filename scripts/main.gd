@@ -1,10 +1,14 @@
 class_name Game
 extends Node2D
 
+
+@onready var camera_2d: Camera2D = $Camera2D
+
 @export var mans_scene: PackedScene = preload("res://scenes/mans.tscn")
 @export var flag_scene: PackedScene = preload("res://scenes/flag.tscn")
 @onready var game_elements: Node2D = $GameElements
 @onready var selection_drawer: Node2D = $SelectionDrawer
+
 
 # Add these class preloads
 var class_resources = [

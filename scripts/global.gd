@@ -9,6 +9,9 @@ const TEAM_COLORS = [
 	#Color(1, 0.3, 1),    # Purple
 ]
 
+const GAME_W = 1280;
+const GAME_H = 720;
+
 var battle_mode_enabled: bool = false
 var show_health_bars: bool = false
 

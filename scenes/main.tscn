@@ -1,130 +1,15 @@
-[gd_scene load_steps=19 format=4 uid="uid://wi2pl5lbo73e"]
+[gd_scene load_steps=12 format=3 uid="uid://wi2pl5lbo73e"]
 
 [ext_resource type="PackedScene" uid="uid://q3om0n6fljfc" path="res://scenes/mans.tscn" id="1_foyq2"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_maoy3"]
-[ext_resource type="Texture2D" uid="uid://bit7pc0v5s36l" path="res://assets/grass_tileset_16x16.png" id="2_eh0fb"]
 [ext_resource type="Texture2D" uid="uid://dxlowtadkok5n" path="res://assets/bkg_large.PNG" id="2_wonl6"]
-[ext_resource type="Texture2D" uid="uid://b5n8afqo2eoi1" path="res://assets/sprites/pond1.png" id="3_3ud78"]
-[ext_resource type="Texture2D" uid="uid://bnv4tlrl8cbqn" path="res://assets/sprites/rock.png" id="3_ujkjo"]
-[ext_resource type="Texture2D" uid="uid://wcx67nhoevlb" path="res://assets/sprites/pond2.png" id="4_ltm1v"]
+[ext_resource type="PackedScene" uid="uid://fg6l4yfgfg6w" path="res://scenes/gameElements/pond_1.tscn" id="3_afuje"]
+[ext_resource type="PackedScene" uid="uid://4c0byphxohlb" path="res://scenes/gameElements/pond_2.tscn" id="4_obmmt"]
+[ext_resource type="Script" path="res://scripts/camera.gd" id="5_3f4av"]
 [ext_resource type="Script" path="res://scripts/mans_class.gd" id="5_l0a0j"]
-[ext_resource type="Texture2D" uid="uid://cylusqfobb2u3" path="res://assets/sprites/tree.png" id="7_odruo"]
+[ext_resource type="PackedScene" uid="uid://wvpi0dfnx8fh" path="res://scenes/gameElements/tree.tscn" id="5_uydtc"]
 [ext_resource type="Script" path="res://scripts/selection_drawer.gd" id="8_5wt0j"]
 [ext_resource type="PackedScene" uid="uid://cllhf7apq42rx" path="res://scenes/tent.tscn" id="8_ys7rq"]
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1t0y3"]
-texture = ExtResource("2_eh0fb")
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-4:0/0 = 0
-5:0/0 = 0
-6:0/0 = 0
-7:0/0 = 0
-8:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
-3:1/0 = 0
-4:1/0 = 0
-5:1/0 = 0
-6:1/0 = 0
-7:1/0 = 0
-8:1/0 = 0
-0:2/0 = 0
-1:2/0 = 0
-2:2/0 = 0
-3:2/0 = 0
-6:2/0 = 0
-7:2/0 = 0
-8:2/0 = 0
-0:3/0 = 0
-1:3/0 = 0
-2:3/0 = 0
-3:3/0 = 0
-4:3/0 = 0
-5:3/0 = 0
-0:4/0 = 0
-1:4/0 = 0
-3:4/0 = 0
-4:4/0 = 0
-5:4/0 = 0
-0:5/0 = 0
-1:5/0 = 0
-2:5/0 = 0
-3:5/0 = 0
-0:6/0 = 0
-1:6/0 = 0
-2:6/0 = 0
-3:6/0 = 0
-4:6/0 = 0
-5:6/0 = 0
-0:7/0 = 0
-1:7/0 = 0
-3:7/0 = 0
-4:7/0 = 0
-5:7/0 = 0
-0:8/0 = 0
-1:8/0 = 0
-2:8/0 = 0
-3:8/0 = 0
-6:3/0 = 0
-6:4/0 = 0
-7:3/0 = 0
-8:3/0 = 0
-8:4/0 = 0
-7:4/0 = 0
-0:9/0 = 0
-1:9/0 = 0
-1:10/0 = 0
-3:10/0 = 0
-4:10/0 = 0
-4:9/0 = 0
-3:9/0 = 0
-2:9/0 = 0
-0:10/0 = 0
-0:11/0 = 0
-1:11/0 = 0
-2:11/0 = 0
-3:11/0 = 0
-5:10/0 = 0
-5:9/0 = 0
-5:13/0 = 0
-4:13/0 = 0
-3:13/0 = 0
-2:12/0 = 0
-1:12/0 = 0
-0:12/0 = 0
-3:12/0 = 0
-4:12/0 = 0
-5:12/0 = 0
-1:13/0 = 0
-0:13/0 = 0
-0:14/0 = 0
-1:14/0 = 0
-2:14/0 = 0
-3:14/0 = 0
-6:13/0 = 0
-7:13/0 = 0
-8:13/0 = 0
-8:12/0 = 0
-7:12/0 = 0
-6:12/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_h21t1"]
-sources/1 = SubResource("TileSetAtlasSource_1t0y3")
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vkm3e"]
-radius = 4.0
-height = 28.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_66407"]
-radius = 3.0
-height = 24.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kvdmr"]
-radius = 3.0
-height = 22.0
 
 [sub_resource type="Resource" id="Resource_6fes4"]
 resource_local_to_scene = true
@@ -137,10 +22,6 @@ speed = 1.0
 class_type = 0
 weak_against = 2
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5dv8f"]
-radius = 4.0
-height = 24.0
-
 [node name="Main" type="Node2D"]
 script = ExtResource("1_maoy3")
 
@@ -149,119 +30,56 @@ script = ExtResource("1_maoy3")
 [node name="BkgLarge" type="Sprite2D" parent="Bkg"]
 texture = ExtResource("2_wonl6")
 
-[node name="Pond1" type="StaticBody2D" parent="Bkg"]
-position = Vector2(-142, 68)
+[node name="Pond1" parent="Bkg" instance=ExtResource("3_afuje")]
+position = Vector2(-159, 32)
 
-[node name="Pond1Sprite" type="Sprite2D" parent="Bkg/Pond1"]
-texture = ExtResource("3_3ud78")
+[node name="Pond3" parent="Bkg" instance=ExtResource("3_afuje")]
+position = Vector2(6, -132)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Bkg/Pond1"]
-position = Vector2(0, 1)
-polygon = PackedVector2Array(-26, -15, -17, -21, -11, -27, 0, -28, 6, -32, 13, -37, 19, -35, 26, -32, 31, -25, 32, -18, 29, -13, 29, -7, 32, -1, 31, 13, 26, 21, 18, 26, 11, 27, 1, 24, -5, 27, -14, 29, -23, 28, -33, 24, -37, 19, -36, 10, -35, 0, -31, -7)
+[node name="Pond4" parent="Bkg" instance=ExtResource("4_obmmt")]
+position = Vector2(-270, 136)
 
-[node name="Pond2" type="StaticBody2D" parent="Bkg"]
-position = Vector2(132, -71)
-
-[node name="Pond2Sprite" type="Sprite2D" parent="Bkg/Pond2"]
-texture = ExtResource("4_ltm1v")
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Bkg/Pond2"]
-position = Vector2(6, -2)
-polygon = PackedVector2Array(-52, -2, -50, -16, -41, -28, -24, -36, -5, -39, 9, -37, 22, -31, 28, -21, 34, -7, 44, -3, 54, 8, 52, 25, 39, 32, 21, 36, -4, 35, -13, 27, -20, 20, -36, 19, -48, 10)
-
-[node name="Layer0" type="TileMapLayer" parent="."]
-visible = false
-z_index = -5
-use_parent_material = true
-tile_map_data = PackedByteArray("AAD2//r/AQAHAA0AAAD2//v/AQAIAA0AAAD2//z/AQAGAA0AAAD2//3/AQAIAA0AAAD2//7/AQAHAA0AAAD2////AQAIAA0AAAD2/wAAAQAIAA0AAAD2/wEAAQAHAA0AAAD2/wIAAQAGAA0AAAD2/wMAAQAHAA0AAAD2/wQAAQAHAA0AAAD2/wUAAQAHAA0AAAD3//r/AQAHAA0AAAD3//v/AQAHAA0AAAD3//z/AQAGAA0AAAD3//3/AQAHAA0AAAD3//7/AQAIAA0AAAD3////AQAGAA0AAAD3/wAAAQAHAA0AAAD3/wEAAQAHAA0AAAD3/wIAAQAIAA0AAAD3/wMAAQAGAA0AAAD3/wQAAQAIAA0AAAD3/wUAAQAGAA0AAAD4//r/AQAHAA0AAAD4//v/AQAHAA0AAAD4//z/AQAHAA0AAAD4//3/AQAGAA0AAAD4//7/AQAGAA0AAAD4////AQAGAA0AAAD4/wAAAQAGAA0AAAD4/wEAAQAIAA0AAAD4/wIAAQAHAA0AAAD4/wMAAQAHAA0AAAD4/wQAAQAIAA0AAAD4/wUAAQAIAA0AAAD5//r/AQAGAA0AAAD5//v/AQAHAA0AAAD5//z/AQAHAA0AAAD5//3/AQAGAA0AAAD5//7/AQAGAA0AAAD5////AQAGAA0AAAD5/wAAAQAGAA0AAAD5/wEAAQAGAA0AAAD5/wIAAQAGAA0AAAD5/wMAAQAIAA0AAAD5/wQAAQAGAA0AAAD5/wUAAQAIAA0AAAD6//r/AQAHAA0AAAD6//v/AQAHAA0AAAD6//z/AQAGAA0AAAD6//3/AQAIAA0AAAD6//7/AQAIAA0AAAD6////AQAHAA0AAAD6/wAAAQAIAA0AAAD6/wEAAQAIAA0AAAD6/wIAAQAIAA0AAAD6/wMAAQAGAA0AAAD6/wQAAQAIAA0AAAD6/wUAAQAGAA0AAAD7//r/AQAIAA0AAAD7//v/AQAGAA0AAAD7//z/AQAIAA0AAAD7//3/AQAHAA0AAAD7//7/AQAGAA0AAAD7////AQAGAA0AAAD7/wAAAQAHAA0AAAD7/wEAAQAGAA0AAAD7/wIAAQAHAA0AAAD7/wMAAQAIAA0AAAD7/wQAAQAIAA0AAAD7/wUAAQAHAA0AAAD8//r/AQAIAA0AAAD8//v/AQAIAA0AAAD8//z/AQAIAA0AAAD8//3/AQAGAA0AAAD8//7/AQAHAA0AAAD8////AQAGAA0AAAD8/wAAAQAHAA0AAAD8/wEAAQAHAA0AAAD8/wIAAQAHAA0AAAD8/wMAAQAGAA0AAAD8/wQAAQAGAA0AAAD8/wUAAQAHAA0AAAD9//r/AQAHAA0AAAD9//v/AQAHAA0AAAD9//z/AQAIAA0AAAD9//3/AQAIAA0AAAD9//7/AQAHAA0AAAD9////AQAHAA0AAAD9/wAAAQAGAA0AAAD9/wEAAQAGAA0AAAD9/wIAAQAGAA0AAAD9/wMAAQAGAA0AAAD9/wQAAQAIAA0AAAD9/wUAAQAGAA0AAAD+//r/AQAIAA0AAAD+//v/AQAIAA0AAAD+//z/AQAGAA0AAAD+//3/AQAHAA0AAAD+//7/AQAGAA0AAAD+////AQAHAA0AAAD+/wAAAQAGAA0AAAD+/wEAAQAGAA0AAAD+/wIAAQAHAA0AAAD+/wMAAQAGAA0AAAD+/wQAAQAIAA0AAAD+/wUAAQAGAA0AAAD///r/AQAIAA0AAAD///v/AQAGAA0AAAD///z/AQAHAA0AAAD///3/AQAHAA0AAAD///7/AQAGAA0AAAD/////AQAGAA0AAAD//wAAAQAIAA0AAAD//wEAAQAIAA0AAAD//wIAAQAGAA0AAAD//wMAAQAHAA0AAAD//wQAAQAHAA0AAAD//wUAAQAIAA0AAAAAAPr/AQAHAA0AAAAAAPv/AQAIAA0AAAAAAPz/AQAHAA0AAAAAAP3/AQAHAA0AAAAAAP7/AQAIAA0AAAAAAP//AQAHAA0AAAAAAAAAAQAGAA0AAAAAAAEAAQAGAA0AAAAAAAIAAQAHAA0AAAAAAAMAAQAGAA0AAAAAAAQAAQAIAA0AAAAAAAUAAQAHAA0AAAABAPr/AQAHAA0AAAABAPv/AQAGAA0AAAABAPz/AQAGAA0AAAABAP3/AQAGAA0AAAABAP7/AQAGAA0AAAABAP//AQAIAA0AAAABAAAAAQAGAA0AAAABAAEAAQAIAA0AAAABAAIAAQAHAA0AAAABAAMAAQAIAA0AAAABAAQAAQAIAA0AAAABAAUAAQAHAA0AAAACAPr/AQAIAA0AAAACAPv/AQAHAA0AAAACAPz/AQAIAA0AAAACAP3/AQAIAA0AAAACAP7/AQAIAA0AAAACAP//AQAGAA0AAAACAAAAAQAHAA0AAAACAAEAAQAHAA0AAAACAAIAAQAGAA0AAAACAAMAAQAHAA0AAAACAAQAAQAGAA0AAAACAAUAAQAIAA0AAAADAPr/AQAHAA0AAAADAPv/AQAGAA0AAAADAPz/AQAIAA0AAAADAP3/AQAGAA0AAAADAP7/AQAIAA0AAAADAP//AQAIAA0AAAADAAAAAQAGAA0AAAADAAEAAQAIAA0AAAADAAIAAQAGAA0AAAADAAMAAQAIAA0AAAADAAQAAQAIAA0AAAADAAUAAQAIAA0AAAAEAPr/AQAIAA0AAAAEAPv/AQAGAA0AAAAEAPz/AQAHAA0AAAAEAP3/AQAHAA0AAAAEAP7/AQAGAA0AAAAEAP//AQAGAA0AAAAEAAAAAQAGAA0AAAAEAAEAAQAIAA0AAAAEAAIAAQAIAA0AAAAEAAMAAQAHAA0AAAAEAAQAAQAHAA0AAAAEAAUAAQAIAA0AAAAFAPr/AQAGAA0AAAAFAPv/AQAHAA0AAAAFAPz/AQAIAA0AAAAFAP3/AQAIAA0AAAAFAP7/AQAGAA0AAAAFAP//AQAIAA0AAAAFAAAAAQAGAA0AAAAFAAEAAQAHAA0AAAAFAAIAAQAIAA0AAAAFAAMAAQAIAA0AAAAFAAQAAQAHAA0AAAAFAAUAAQAIAA0AAAAGAPr/AQAIAA0AAAAGAPv/AQAIAA0AAAAGAPz/AQAIAA0AAAAGAP3/AQAIAA0AAAAGAP7/AQAHAA0AAAAGAP//AQAIAA0AAAAGAAAAAQAIAA0AAAAGAAEAAQAGAA0AAAAGAAIAAQAGAA0AAAAGAAMAAQAHAA0AAAAGAAQAAQAIAA0AAAAGAAUAAQAGAA0AAAAHAPr/AQAIAA0AAAAHAPv/AQAHAA0AAAAHAPz/AQAHAA0AAAAHAP3/AQAHAA0AAAAHAP7/AQAGAA0AAAAHAP//AQAGAA0AAAAHAAAAAQAGAA0AAAAHAAEAAQAHAA0AAAAHAAIAAQAIAA0AAAAHAAMAAQAHAA0AAAAHAAQAAQAHAA0AAAAHAAUAAQAIAA0AAAAIAPr/AQAGAA0AAAAIAPv/AQAHAA0AAAAIAPz/AQAHAA0AAAAIAP3/AQAGAA0AAAAIAP7/AQAHAA0AAAAIAP//AQAGAA0AAAAIAAAAAQAIAA0AAAAIAAEAAQAGAA0AAAAIAAIAAQAGAA0AAAAIAAMAAQAHAA0AAAAIAAQAAQAGAA0AAAAIAAUAAQAGAA0AAAAJAPr/AQAIAA0AAAAJAPv/AQAHAA0AAAAJAPz/AQAHAA0AAAAJAP3/AQAGAA0AAAAJAP7/AQAGAA0AAAAJAP//AQAGAA0AAAAJAAAAAQAGAA0AAAAJAAEAAQAGAA0AAAAJAAIAAQAHAA0AAAAJAAMAAQAHAA0AAAAJAAQAAQAGAA0AAAAJAAUAAQAHAA0AAAA=")
-tile_set = SubResource("TileSet_h21t1")
-
-[node name="Layer1" type="TileMapLayer" parent="."]
-visible = false
-z_index = -5
-use_parent_material = true
-tile_map_data = PackedByteArray("AAD2//v/AQABAAwAAAD2//z/AQABAA0AAAD2//3/AQABAA0AAAD2//7/AQABAA0AAAD2////AQABAA0AAAD2/wAAAQABAA0AAAD2/wEAAQABAA0AAAD2/wIAAQABAA0AAAD2/wMAAQABAA0AAAD2/wQAAQABAA4AAAAJAAQAAQADAA4AAAAJAAMAAQADAA0AAAAJAAIAAQADAA0AAAAJAAEAAQADAA0AAAAJAAAAAQADAA0AAAAJAP//AQADAA0AAAAJAP7/AQADAA0AAAAJAP3/AQADAA0AAAAJAPz/AQADAA0AAAAJAPv/AQADAAwAAAD3//v/AQACAAwAAAD4//v/AQACAAwAAAD5//v/AQACAAwAAAD6//v/AQACAAwAAAD7//v/AQACAAwAAAD8//v/AQACAAwAAAD9//v/AQACAAwAAAD+//v/AQACAAwAAAD///v/AQACAAwAAAAAAPv/AQACAAwAAAABAPv/AQACAAwAAAACAPv/AQACAAwAAAADAPv/AQACAAwAAAAEAPv/AQACAAwAAAAFAPv/AQACAAwAAAAGAPv/AQACAAwAAAAHAPv/AQACAAwAAAAIAPv/AQACAAwAAAD3/wQAAQACAA4AAAD4/wQAAQACAA4AAAD5/wQAAQACAA4AAAD6/wQAAQACAA4AAAD7/wQAAQACAA4AAAD8/wQAAQACAA4AAAD9/wQAAQACAA4AAAD+/wQAAQACAA4AAAD//wQAAQACAA4AAAAAAAQAAQACAA4AAAABAAQAAQACAA4AAAACAAQAAQACAA4AAAADAAQAAQACAA4AAAAEAAQAAQACAA4AAAAFAAQAAQACAA4AAAAGAAQAAQACAA4AAAAHAAQAAQACAA4AAAAIAAQAAQACAA4AAAD2/wUAAQAAAA0AAAD3/wUAAQAAAA4AAAD4/wUAAQAAAAwAAAD5/wUAAQAAAA0AAAD6/wUAAQAAAA0AAAD7/wUAAQAAAAwAAAD8/wUAAQAAAA4AAAD9/wUAAQAAAA4AAAD+/wUAAQAAAA4AAAD//wUAAQAAAA0AAAAAAAUAAQAAAA4AAAABAAUAAQAAAAwAAAACAAUAAQAAAA0AAAADAAUAAQAAAA4AAAAEAAUAAQAAAA0AAAAFAAUAAQAAAA0AAAAGAAUAAQAAAA0AAAAHAAUAAQAAAA0AAAAIAAUAAQAAAA0AAAAJAAUAAQAAAA4AAAD2//r/AQAAAA0AAAD3//r/AQAAAA4AAAD4//r/AQAAAA0AAAD5//r/AQAAAA4AAAD6//r/AQAAAA4AAAD7//r/AQAAAAwAAAD8//r/AQAAAA0AAAD9//r/AQAAAAwAAAD+//r/AQAAAA0AAAD///r/AQAAAA4AAAAAAPr/AQAAAA4AAAABAPr/AQAAAA4AAAACAPr/AQAAAA0AAAADAPr/AQAAAAwAAAAEAPr/AQAAAAwAAAAFAPr/AQAAAA0AAAAGAPr/AQAAAA4AAAAHAPr/AQAAAAwAAAAIAPr/AQAAAA0AAAAJAPr/AQAAAA0AAAD8/wMAAQACAAwAAAD9/wMAAQAFAA0AAAD4//3/AQACAAwAAAD5//3/AQAFAA0AAAAHAAEAAQACAAwAAAAIAAEAAQAFAA0AAAD8/wIAAQACAA4AAAD9/wIAAQAFAAwAAAD4//z/AQACAA4AAAD5//z/AQAFAAwAAAAHAAAAAQACAA4AAAAIAAAAAQAFAAwAAAD7/wIAAQAEAAwAAAD7/wMAAQAEAA0AAAD3//z/AQAEAAwAAAD3//3/AQAEAA0AAAAGAAAAAQACAA4AAAAGAAEAAQACAAwAAAAFAAAAAQAEAAwAAAAFAAEAAQAEAA0AAAA=")
-tile_set = SubResource("TileSet_h21t1")
+[node name="Pond2" parent="Bkg" instance=ExtResource("4_obmmt")]
+position = Vector2(166, -19)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("5_3f4av")
 
 [node name="GameElements" type="Node2D" parent="."]
 y_sort_enabled = true
-
-[node name="Rock1" type="StaticBody2D" parent="GameElements"]
-y_sort_enabled = true
-position = Vector2(278, -60)
-
-[node name="Sprite2D" type="Sprite2D" parent="GameElements/Rock1"]
-position = Vector2(0, 1)
-texture = ExtResource("3_ujkjo")
-offset = Vector2(0, -12)
-hframes = 3
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameElements/Rock1"]
-position = Vector2(0, -3)
-rotation = 1.5708
-shape = SubResource("CapsuleShape2D_vkm3e")
-
-[node name="Rock2" type="StaticBody2D" parent="GameElements"]
-y_sort_enabled = true
-position = Vector2(60, -135)
-
-[node name="Sprite2D2" type="Sprite2D" parent="GameElements/Rock2"]
-texture = ExtResource("3_ujkjo")
-offset = Vector2(0, -11)
-hframes = 3
-frame = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameElements/Rock2"]
-position = Vector2(0, -2)
-rotation = 1.57079
-shape = SubResource("CapsuleShape2D_66407")
-
-[node name="Rock3" type="StaticBody2D" parent="GameElements"]
-y_sort_enabled = true
-position = Vector2(193, -178)
-
-[node name="Sprite2D" type="Sprite2D" parent="GameElements/Rock3"]
-position = Vector2(-1, 0)
-texture = ExtResource("3_ujkjo")
-offset = Vector2(0, -11)
-hframes = 3
-frame = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameElements/Rock3"]
-position = Vector2(0, -3)
-rotation = 1.57079
-shape = SubResource("CapsuleShape2D_kvdmr")
 
 [node name="mans" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("1_foyq2")]
 game = NodePath("../..")
 stats = SubResource("Resource_6fes4")
 
-[node name="Tree" type="StaticBody2D" parent="GameElements"]
-position = Vector2(-2, 1)
+[node name="Tree3" parent="GameElements" instance=ExtResource("5_uydtc")]
+position = Vector2(79, 183)
 
-[node name="Sprite2D" type="Sprite2D" parent="GameElements/Tree"]
-texture = ExtResource("7_odruo")
-offset = Vector2(-7, -30)
+[node name="Tree4" parent="GameElements" instance=ExtResource("5_uydtc")]
+position = Vector2(-58, 215)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameElements/Tree"]
-rotation = 1.57079
-shape = SubResource("CapsuleShape2D_5dv8f")
+[node name="Tree5" parent="GameElements" instance=ExtResource("5_uydtc")]
+position = Vector2(-292, -99)
+
+[node name="Tree" parent="GameElements" instance=ExtResource("5_uydtc")]
+position = Vector2(48, 58)
+
+[node name="Tree2" parent="GameElements" instance=ExtResource("5_uydtc")]
+position = Vector2(347, -106)
 
 [node name="Red Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
 y_sort_enabled = true
-position = Vector2(-135, -63)
+position = Vector2(-228, -128)
 game = NodePath("../..")
 
 [node name="Blue Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
 y_sort_enabled = true
-position = Vector2(128, 59)
+position = Vector2(273, -145)
 game = NodePath("../..")
 team_color_index = 1
 
 [node name="Green Tent" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("8_ys7rq")]
-position = Vector2(-31, 59)
+position = Vector2(12, 200)
 game = NodePath("../..")
 team_color_index = 2
 

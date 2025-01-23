@@ -157,22 +157,18 @@ func _physics_process(_delta: float) -> void:
 	sprite.rotation = rotation_velocity
 	prev_position = position
 
+func get_game_bounds(margin: float = 0.0) -> Dictionary:
+	return {
+		"left": -Global.GAME_W/2.0 - margin,
+		"right": Global.GAME_W/2.0 + margin,
+		"top": -Global.GAME_H/2.0 - margin,
+		"bottom": Global.GAME_H/2.0 + margin
+	}
+
 func check_off_screen() -> void:
-	var camera = get_viewport().get_camera_2d()
-	if !camera:
-		return
-		
-	var viewport_size = get_viewport_rect().size
-	var screen_center = camera.global_position
-	var margin = 50
-	
-	var left = screen_center.x - viewport_size.x/2 - margin
-	var right = screen_center.x + viewport_size.x/2 + margin
-	var top = screen_center.y - viewport_size.y/2 - margin
-	var bottom = screen_center.y + viewport_size.y/2 + margin
-	
-	if position.x < left or position.x > right or \
-	   position.y < top or position.y > bottom:
+	var bounds = get_game_bounds(SCREEN_MARGIN)
+	if position.x < bounds.left or position.x > bounds.right or \
+	   position.y < bounds.top or position.y > bounds.bottom:
 		queue_free()
 
 func pick_up():
@@ -261,30 +257,19 @@ func heal(amount: int) -> void:
 	update_health_bar()
 
 func apply_edge_avoidance() -> void:
-	var camera = get_viewport().get_camera_2d()
-	if !camera:
-		return
-		
-	var viewport_size = get_viewport_rect().size
-	var screen_center = camera.global_position
-	
-	var left = screen_center.x - viewport_size.x/2
-	var right = screen_center.x + viewport_size.x/2
-	var top = screen_center.y - viewport_size.y/2
-	var bottom = screen_center.y + viewport_size.y/2
-	
+	var bounds = get_game_bounds(SCREEN_MARGIN)
 	var force = Vector2.ZERO
 	
 	# Check each edge and apply appropriate force
-	if position.x - left < SCREEN_MARGIN:
-		force.x = (SCREEN_MARGIN - (position.x - left)) * (EDGE_FORCE/SCREEN_MARGIN)
-	elif right - position.x < SCREEN_MARGIN:
-		force.x = -((SCREEN_MARGIN - (right - position.x)) * (EDGE_FORCE/SCREEN_MARGIN))
+	if position.x - bounds.left < SCREEN_MARGIN:
+		force.x = (SCREEN_MARGIN - (position.x - bounds.left)) * (EDGE_FORCE/SCREEN_MARGIN)
+	elif bounds.right - position.x < SCREEN_MARGIN:
+		force.x = -((SCREEN_MARGIN - (bounds.right - position.x)) * (EDGE_FORCE/SCREEN_MARGIN))
 		
-	if position.y - top < SCREEN_MARGIN:
-		force.y = (SCREEN_MARGIN - (position.y - top)) * (EDGE_FORCE/SCREEN_MARGIN)
-	elif bottom - position.y < SCREEN_MARGIN:
-		force.y = -((SCREEN_MARGIN - (bottom - position.y)) * (EDGE_FORCE/SCREEN_MARGIN))
+	if position.y - bounds.top < SCREEN_MARGIN:
+		force.y = (SCREEN_MARGIN - (position.y - bounds.top)) * (EDGE_FORCE/SCREEN_MARGIN)
+	elif bounds.bottom - position.y < SCREEN_MARGIN:
+		force.y = -((SCREEN_MARGIN - (bounds.bottom - position.y)) * (EDGE_FORCE/SCREEN_MARGIN))
 	
 	if force != Vector2.ZERO:
 		apply_central_force(force)

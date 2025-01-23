@@ -1,6 +1,9 @@
 class_name Tent
 extends Node2D
 
+@onready var score_label: RichTextLabel = $ScoreLabel
+@onready var fireworks: CPUParticles2D = $Fireworks
+
 @onready var flag_sprite: Sprite2D = $FlagSprite
 @onready var drop_zone: Area2D = $DropZone
 @onready var spawn_shape: CollisionShape2D = $SpawnZone/SpawnShape
@@ -13,14 +16,24 @@ extends Node2D
 
 func _ready() -> void:
 	game.team_bases[team_color_index] = self;
+	game.team_scores[team_color_index] = 0  # Initialize score
 	update_color();
+	update_score_label();
 
 func update_color() -> void:
 	if flag_sprite:
 		var mat = flag_sprite.material as ShaderMaterial
 		if mat:
 			mat.set_shader_parameter("modulate", Global.TEAM_COLORS[team_color_index])
+	if score_label:
+		score_label.add_theme_color_override("default_color", Global.TEAM_COLORS[team_color_index])
+	if fireworks:
+		fireworks.color = Global.TEAM_COLORS[team_color_index]
 
+func update_score_label() -> void:
+	if score_label:
+		var score = game.team_scores.get(team_color_index, 0)
+		score_label.text = str(score)
 
 func _on_drop_zone_area_entered(area: Area2D) -> void:
 	if area is Flag:
@@ -29,7 +42,9 @@ func _on_drop_zone_area_entered(area: Area2D) -> void:
 			# Capture dat flag
 			flag.carrier.heal(50);
 			flag.detach();
+			fireworks.emitting = true;
 			game.capture_flag(team_color_index, flag);
+			update_score_label();  # Update score display
 			# Defer the spawn on the correct team's tent
 			var enemy_tent = game.team_bases[flag.team_color_index] as Tent;
 			enemy_tent.call_deferred("spawn_flag");
