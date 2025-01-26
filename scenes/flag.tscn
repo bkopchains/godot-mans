@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/flag.gd" id="1_b5d7n"]
 [ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="2_bvdrm"]
-[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/flag.png" id="3_ucuco"]
+[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/gameElements/flag.png" id="3_ucuco"]
 
 [sub_resource type="Gradient" id="Gradient_op4qa"]
 colors = PackedColorArray(0, 0, 0, 0.447059, 0, 0, 0, 0)

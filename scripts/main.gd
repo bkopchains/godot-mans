@@ -98,11 +98,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			var new_mans = mans_scene.instantiate() as Mans
 			new_mans.position = get_global_mouse_position()
-			new_mans.game = self;
+			new_mans.game = self
 			
 			# Create a unique instance of the class stats
 			var random_class = class_resources[randi() % class_resources.size()]
 			new_mans.stats = random_class.duplicate()
+			
+			# In non-admin mode, use player's team
+			if !Global.admin_mode:
+				new_mans.team_color_index = Global.player_team
 			
 			game_elements.add_child(new_mans)
 			
@@ -118,19 +122,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			selection_drawer.selection_rect = get_selection_rect()
 			update_selection_preview()
 
-	if event.is_action_pressed("delete"):
-		if selected_mans.size() > 0:
-			for mans in selected_mans:
-				if is_instance_valid(mans):
-					game_elements.remove_child(mans);
-					mans.queue_free();
-			selected_mans.clear();
-
-	elif event.is_action_pressed("toggle_battle"):
+	# Admin-only features
+	if Global.admin_mode:
+		if event.is_action_pressed("delete"):
+			if selected_mans.size() > 0:
+				for mans in selected_mans:
+					if is_instance_valid(mans):
+						game_elements.remove_child(mans)
+						mans.queue_free()
+				selected_mans.clear()
+	
+	# Normal gameplay features
+	if event.is_action_pressed("toggle_battle"):
 		Global.toggle_battle_mode()
-
 	elif event.is_action_pressed("toggle_health"):
 		Global.toggle_health_bars()
+	elif event.is_action_pressed("toggle_admin"):
+		print("toggle admin");
+		Global.toggle_admin_mode()
 
 func spawn_flag(team_index: int, pos: Vector2) -> Flag:
 	var flag = flag_scene.instantiate() as Flag

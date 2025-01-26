@@ -1,26 +1,14 @@
-[gd_scene load_steps=12 format=3 uid="uid://wi2pl5lbo73e"]
+[gd_scene load_steps=10 format=3 uid="uid://wi2pl5lbo73e"]
 
-[ext_resource type="PackedScene" uid="uid://q3om0n6fljfc" path="res://scenes/mans.tscn" id="1_foyq2"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_maoy3"]
+[ext_resource type="PackedScene" uid="uid://c1xwnocfdn5m0" path="res://scenes/ui/ingame_ui.tscn" id="2_vhc0j"]
 [ext_resource type="Texture2D" uid="uid://dxlowtadkok5n" path="res://assets/bkg_large.PNG" id="2_wonl6"]
 [ext_resource type="PackedScene" uid="uid://fg6l4yfgfg6w" path="res://scenes/gameElements/pond_1.tscn" id="3_afuje"]
 [ext_resource type="PackedScene" uid="uid://4c0byphxohlb" path="res://scenes/gameElements/pond_2.tscn" id="4_obmmt"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="5_3f4av"]
-[ext_resource type="Script" path="res://scripts/mans_class.gd" id="5_l0a0j"]
 [ext_resource type="PackedScene" uid="uid://wvpi0dfnx8fh" path="res://scenes/gameElements/tree.tscn" id="5_uydtc"]
 [ext_resource type="Script" path="res://scripts/selection_drawer.gd" id="8_5wt0j"]
 [ext_resource type="PackedScene" uid="uid://cllhf7apq42rx" path="res://scenes/tent.tscn" id="8_ys7rq"]
-
-[sub_resource type="Resource" id="Resource_6mj4y"]
-resource_local_to_scene = true
-script = ExtResource("5_l0a0j")
-name = "Man"
-max_hp = 100
-hp = 100
-attack_power = 10
-speed = 1.0
-class_type = 0
-weak_against = 2
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_maoy3")
@@ -42,17 +30,8 @@ position = Vector2(-270, 136)
 [node name="Pond2" parent="Bkg" instance=ExtResource("4_obmmt")]
 position = Vector2(166, -19)
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(272, -131)
-script = ExtResource("5_3f4av")
-
 [node name="GameElements" type="Node2D" parent="."]
 y_sort_enabled = true
-
-[node name="mans" parent="GameElements" node_paths=PackedStringArray("game") instance=ExtResource("1_foyq2")]
-position = Vector2(272, -131)
-game = NodePath("../..")
-stats = SubResource("Resource_6mj4y")
 
 [node name="Tree3" parent="GameElements" instance=ExtResource("5_uydtc")]
 position = Vector2(79, 183)
@@ -89,3 +68,11 @@ team_color_index = 2
 z_index = 999
 z_as_relative = false
 script = ExtResource("8_5wt0j")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-183, -102)
+script = ExtResource("5_3f4av")
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="IngameUI" parent="UILayer" instance=ExtResource("2_vhc0j")]

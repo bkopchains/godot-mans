@@ -1,0 +1,28 @@
+Game TODOs / Ideas
+- Need to gamify:
+	- set levels?
+	- randomize placements?
+		- within guidelines maybe
+			- level TYPES?
+	- with increasing difficulty modifiers:
+		- enemy:
+			- mans count
+			- mans types
+				- oops all brutes!
+		- win req:
+			- score X to win
+			- survive X seconds/mins
+		- player:
+			- mans type restriction?
+			- limited stock
+				- replenish 2-3 on each capture?
+				- earn XP on kill?
+				- level up mans?
+	- manual selection of:
+		- mans types
+		- mans behavior?
+	- deck of mans?
+		- can upgrade mans maybe?
+		- upgrade system?
+	- instead of branching roguelike path
+		- zone control against diff armies

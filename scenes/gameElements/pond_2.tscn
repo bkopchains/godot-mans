@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://4c0byphxohlb"]
 
-[ext_resource type="Texture2D" uid="uid://wcx67nhoevlb" path="res://assets/sprites/pond2.png" id="1_hpsaw"]
+[ext_resource type="Texture2D" uid="uid://wcx67nhoevlb" path="res://assets/sprites/gameElements/pond2.png" id="1_hpsaw"]
 
 [node name="Pond2" type="StaticBody2D"]
 position = Vector2(113, -85)

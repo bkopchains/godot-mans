@@ -1,0 +1,137 @@
+[gd_scene load_steps=23 format=3 uid="uid://c1xwnocfdn5m0"]
+
+[ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_kisw0"]
+[ext_resource type="Texture2D" uid="uid://dhwak636htblv" path="res://assets/sprites/ui/9panel.png" id="2_nxbix"]
+[ext_resource type="StyleBox" uid="uid://c8k7mg35eg6p" path="res://resources/ui/button/man/focus.tres" id="3_1sqte"]
+[ext_resource type="StyleBox" uid="uid://dcffgybn1v3lx" path="res://resources/ui/button/man/normal.tres" id="3_yogdt"]
+[ext_resource type="StyleBox" uid="uid://dyyj6hu3bjdjh" path="res://resources/ui/button/man/hover.tres" id="4_wlkdw"]
+[ext_resource type="StyleBox" uid="uid://blb4vujm1pmyx" path="res://resources/ui/button/man/pressed.tres" id="5_luwhw"]
+[ext_resource type="StyleBox" uid="uid://ctijxjewwyyof" path="res://resources/ui/button/brute/focus.tres" id="7_c8q24"]
+[ext_resource type="StyleBox" uid="uid://xfmueu0smfhp" path="res://resources/ui/button/brute/hover.tres" id="8_er42v"]
+[ext_resource type="StyleBox" uid="uid://c56yasdgnojhx" path="res://resources/ui/button/brute/pressed.tres" id="9_5pdif"]
+[ext_resource type="StyleBox" uid="uid://dofmeqkiqryo3" path="res://resources/ui/button/brute/normal.tres" id="10_7i8s5"]
+[ext_resource type="StyleBox" uid="uid://bro7h7lt7dup6" path="res://resources/ui/button/wizard/focus.tres" id="11_w1pdq"]
+[ext_resource type="StyleBox" uid="uid://cagrrgue47gb5" path="res://resources/ui/button/wizard/hover.tres" id="12_r35dx"]
+[ext_resource type="StyleBox" uid="uid://bc3hu1lc6uwoj" path="res://resources/ui/button/wizard/pressed.tres" id="13_k3d7q"]
+[ext_resource type="StyleBox" uid="uid://b3i6ggtib0nbr" path="res://resources/ui/button/wizard/normal.tres" id="14_mwaso"]
+[ext_resource type="StyleBox" uid="uid://c1d8jj3x776h1" path="res://resources/ui/button/dog/focus.tres" id="15_o853u"]
+[ext_resource type="StyleBox" uid="uid://ch4wsn0s41vvt" path="res://resources/ui/button/dog/hover.tres" id="16_n5mpt"]
+[ext_resource type="StyleBox" uid="uid://chss2elm6587f" path="res://resources/ui/button/dog/pressed.tres" id="17_fp6fx"]
+[ext_resource type="StyleBox" uid="uid://d176evbsms2bl" path="res://resources/ui/button/dog/normal.tres" id="18_br0pw"]
+[ext_resource type="StyleBox" uid="uid://cybovvbxp0ppi" path="res://resources/ui/button/baby/focus.tres" id="19_t6phv"]
+[ext_resource type="StyleBox" uid="uid://b8vul61yxxtu8" path="res://resources/ui/button/baby/hover.tres" id="20_314xx"]
+[ext_resource type="StyleBox" uid="uid://c180pit58q231" path="res://resources/ui/button/baby/pressed.tres" id="21_75j8r"]
+[ext_resource type="StyleBox" uid="uid://dqic3r83by7uf" path="res://resources/ui/button/baby/normal.tres" id="22_yil0w"]
+
+[node name="IngameUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_kisw0")
+
+[node name="PopupMenu" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupMenu"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 10
+
+[node name="BaseMenuScreen" type="MarginContainer" parent="PopupMenu/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="PopupMenu/VBoxContainer/BaseMenuScreen"]
+custom_minimum_size = Vector2(118, 32)
+layout_mode = 2
+texture = ExtResource("2_nxbix")
+region_rect = Rect2(0, 0, 16, 16)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Man" type="Button" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(18, 19)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_styles/focus = ExtResource("3_1sqte")
+theme_override_styles/hover = ExtResource("4_wlkdw")
+theme_override_styles/pressed = ExtResource("5_luwhw")
+theme_override_styles/normal = ExtResource("3_yogdt")
+
+[node name="Brute" type="Button" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(18, 19)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_styles/focus = ExtResource("7_c8q24")
+theme_override_styles/hover = ExtResource("8_er42v")
+theme_override_styles/pressed = ExtResource("9_5pdif")
+theme_override_styles/normal = ExtResource("10_7i8s5")
+
+[node name="Wizard" type="Button" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(18, 19)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_styles/focus = ExtResource("11_w1pdq")
+theme_override_styles/hover = ExtResource("12_r35dx")
+theme_override_styles/pressed = ExtResource("13_k3d7q")
+theme_override_styles/normal = ExtResource("14_mwaso")
+
+[node name="Dog" type="Button" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(18, 19)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_styles/focus = ExtResource("15_o853u")
+theme_override_styles/hover = ExtResource("16_n5mpt")
+theme_override_styles/pressed = ExtResource("17_fp6fx")
+theme_override_styles/normal = ExtResource("18_br0pw")
+
+[node name="Baby" type="Button" parent="PopupMenu/VBoxContainer/BaseMenuScreen/NinePatchRect/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(18, 19)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_styles/focus = ExtResource("19_t6phv")
+theme_override_styles/hover = ExtResource("20_314xx")
+theme_override_styles/pressed = ExtResource("21_75j8r")
+theme_override_styles/normal = ExtResource("22_yil0w")
+
+[node name="Separator" type="Control" parent="PopupMenu/VBoxContainer"]
+layout_mode = 2

@@ -106,7 +106,7 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 					# Otherwise just drag this mans
 					pick_up()
 					drag_offset = position - get_global_mouse_position()
-		elif event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		elif Global.admin_mode and (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN):
 			var direction = 1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else -1
 			var new_frame = wrapi(sprite.frame + direction, 0, 5)
 			sprite.frame = new_frame
@@ -125,21 +125,23 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				queue_free()
 	
-	# Handle number keys for color changes while hovering or selected
-	elif event is InputEventKey and event.pressed:
-		if event.keycode == KEY_0:  # Random color on 0 key
-			if is_hovered or is_selected:
-				var mat = sprite.material as ShaderMaterial
-				var idx = randi() % Global.TEAM_COLORS.size();
-				mat.set_shader_parameter("modulate", Global.TEAM_COLORS[idx]);
-				team_color_index = idx;
-		else:
-			var key_num = event.keycode - KEY_1
-			if key_num >= 0 and key_num < Global.TEAM_COLORS.size():
+	# Only allow team/class changes in admin mode
+	if Global.admin_mode:
+		# Handle number keys for color changes while hovering or selected
+		if event is InputEventKey and event.pressed:
+			if event.keycode == KEY_0:  # Random color on 0 key
 				if is_hovered or is_selected:
 					var mat = sprite.material as ShaderMaterial
-					mat.set_shader_parameter("modulate", Global.TEAM_COLORS[key_num]);
-					team_color_index = key_num;
+					var idx = randi() % Global.TEAM_COLORS.size()
+					mat.set_shader_parameter("modulate", Global.TEAM_COLORS[idx])
+					team_color_index = idx
+			else:
+				var key_num = event.keycode - KEY_1
+				if key_num >= 0 and key_num < Global.TEAM_COLORS.size():
+					if is_hovered or is_selected:
+						var mat = sprite.material as ShaderMaterial
+						mat.set_shader_parameter("modulate", Global.TEAM_COLORS[key_num])
+						team_color_index = key_num
 
 func _physics_process(_delta: float) -> void:
 	if is_dragging:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckurweh55ijvj"
-path="res://.godot/imported/Tent.png-6df24eb07db36aa630c463c06ffd0626.ctex"
+uid="uid://b2wixdyi3dao5"
+path="res://.godot/imported/mans.png-14279535458ac9087852480aa13784d9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/Tent.png"
-dest_files=["res://.godot/imported/Tent.png-6df24eb07db36aa630c463c06ffd0626.ctex"]
+source_file="res://assets/sprites/gameElements/mans.png"
+dest_files=["res://.godot/imported/mans.png-14279535458ac9087852480aa13784d9.ctex"]
 
 [params]
 

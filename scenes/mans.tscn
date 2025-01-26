@@ -2,7 +2,7 @@
 
 [ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="1_0bgf1"]
 [ext_resource type="Script" path="res://scripts/mans.gd" id="1_h6m7i"]
-[ext_resource type="Texture2D" uid="uid://b2wixdyi3dao5" path="res://assets/sprites/mans.png" id="2_psv55"]
+[ext_resource type="Texture2D" uid="uid://b2wixdyi3dao5" path="res://assets/sprites/gameElements/mans.png" id="2_psv55"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_8kqxp"]
 friction = 0.0

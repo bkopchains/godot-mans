@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cylusqfobb2u3"
-path="res://.godot/imported/tree.png-15cb16b197553088007c6ba3ce2f75b0.ctex"
+uid="uid://bnv4tlrl8cbqn"
+path="res://.godot/imported/rock.png-b942a1f04cd88cff8ae790b70d0f7633.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/tree.png"
-dest_files=["res://.godot/imported/tree.png-15cb16b197553088007c6ba3ce2f75b0.ctex"]
+source_file="res://assets/sprites/gameElements/rock.png"
+dest_files=["res://.godot/imported/rock.png-b942a1f04cd88cff8ae790b70d0f7633.ctex"]
 
 [params]
 

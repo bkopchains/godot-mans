@@ -1,8 +1,8 @@
 [gd_scene load_steps=11 format=3 uid="uid://cllhf7apq42rx"]
 
 [ext_resource type="Script" path="res://scripts/tent.gd" id="1_4775a"]
-[ext_resource type="Texture2D" uid="uid://ckurweh55ijvj" path="res://assets/sprites/Tent.png" id="1_c1uid"]
-[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/flag.png" id="2_pehq3"]
+[ext_resource type="Texture2D" uid="uid://ckurweh55ijvj" path="res://assets/sprites/gameElements/Tent.png" id="1_c1uid"]
+[ext_resource type="Texture2D" uid="uid://r56wlnp0cfs4" path="res://assets/sprites/gameElements/flag.png" id="2_pehq3"]
 [ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="3_y8eeo"]
 [ext_resource type="Theme" uid="uid://cse8cwubw8ant" path="res://resources/UI Theme.tres" id="5_v25iu"]
 

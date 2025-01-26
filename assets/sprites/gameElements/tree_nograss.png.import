@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2wixdyi3dao5"
-path="res://.godot/imported/mans.png-58322be70e1989bc3e8d891f0509abd8.ctex"
+uid="uid://cir5k804lvx85"
+path="res://.godot/imported/tree_nograss.png-6ea65767d5bcafbe080d594b415565c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/mans.png"
-dest_files=["res://.godot/imported/mans.png-58322be70e1989bc3e8d891f0509abd8.ctex"]
+source_file="res://assets/sprites/gameElements/tree_nograss.png"
+dest_files=["res://.godot/imported/tree_nograss.png-6ea65767d5bcafbe080d594b415565c9.ctex"]
 
 [params]
 
