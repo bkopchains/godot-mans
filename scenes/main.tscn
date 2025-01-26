@@ -75,4 +75,9 @@ script = ExtResource("5_3f4av")
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
-[node name="IngameUI" parent="UILayer" instance=ExtResource("2_vhc0j")]
+[node name="IngameUI" parent="UILayer" node_paths=PackedStringArray("game", "drag_layer") instance=ExtResource("2_vhc0j")]
+game = NodePath("../..")
+drag_layer = NodePath("../../DragLayer")
+
+[node name="DragLayer" type="CanvasLayer" parent="."]
+layer = 2

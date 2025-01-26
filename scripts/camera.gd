@@ -6,6 +6,9 @@ const SMOOTHING = 0.01    # Lower = smoother camera movement
 const MIN_ZOOM = 0.25    # Changed to allow zooming out to 1/4x
 const MAX_ZOOM = 1.0     # Normal zoom is now max
 const ZOOM_SPEED = 0.05
+const TOGGLE_SAFE_ZONE = 30  # Pixels around toggle button where scrolling is disabled
+
+@onready var toggle_button: Button = get_node("../UILayer/IngameUI/PopupMenu/VBoxToggle/MarginContainer/MenuToggleButton")
 
 var target_position = Vector2.ZERO
 var target_zoom = Vector2.ONE
@@ -55,7 +58,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		target_zoom = new_zoom
 		target_position = new_position
 
+func is_mouse_near_toggle() -> bool:
+	if !toggle_button:
+		return false
+		
+	var mouse_pos = get_viewport().get_mouse_position()
+	var toggle_rect = Rect2(
+		toggle_button.global_position - Vector2(TOGGLE_SAFE_ZONE, TOGGLE_SAFE_ZONE),
+		toggle_button.size + Vector2(TOGGLE_SAFE_ZONE * 2, TOGGLE_SAFE_ZONE * 2)
+	)
+	
+	return toggle_rect.has_point(mouse_pos)
+
 func _process(delta: float) -> void:
+	if is_mouse_near_toggle():
+		return  # Don't scroll if mouse is near toggle
+		
 	var mouse_pos = get_viewport().get_mouse_position()
 	var screen_size = viewport_size
 	var move_vec = Vector2.ZERO

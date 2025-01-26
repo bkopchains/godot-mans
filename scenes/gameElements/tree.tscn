@@ -7,11 +7,13 @@ radius = 4.0
 height = 24.0
 
 [node name="Tree" type="StaticBody2D"]
-position = Vector2(52, 29)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(7, -5)
 texture = ExtResource("1_un3k4")
 offset = Vector2(-7, -30)
+region_enabled = true
+region_rect = Rect2(124, 27, 83, 115)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = 1.57079

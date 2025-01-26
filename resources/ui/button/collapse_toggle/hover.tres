@@ -1,0 +1,7 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://dnvsexk7k8e3"]
+
+[ext_resource type="Texture2D" uid="uid://ddiyjvkd6n7ce" path="res://assets/sprites/ui/buttons.png" id="1_mh56k"]
+
+[resource]
+texture = ExtResource("1_mh56k")
+region_rect = Rect2(627, 6, 18, 12)

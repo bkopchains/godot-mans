@@ -16,6 +16,18 @@ var is_hovered: bool = false
 var drag_offset: Vector2
 var prev_position: Vector2
 var rotation_velocity: float = 0.0
+var team_color_index: int = -1;
+var current_target: Mans = null
+var attack_cooldown: bool = false
+
+# true when spawned/dragged from menu drawer
+var from_drawer: bool = false;
+
+# Battle state
+var is_lunging: bool = false
+
+var carried_flag: Flag = null
+var team_flag_carrier: Mans = null  # Track who has our flag
 
 # Reference to the class data
 @export var stats: MansClass
@@ -23,10 +35,6 @@ var rotation_velocity: float = 0.0
 # Damage multiplier when hit by weakness
 const WEAKNESS_MULTIPLIER: float = 2
 
-# Add these near the top with other variables
-var team_color_index: int = -1;
-var current_target: Mans = null
-var attack_cooldown: bool = false
 
 # Battle-related constants
 const LUNGE_FORCE: float = 50.0   # Force for quick lunges
@@ -37,12 +45,6 @@ const ATTACK_FORCE: float = 25.0
 const SCREEN_MARGIN: float = 10.0  # Distance from edge to start avoiding
 const EDGE_FORCE: float = 200.0    # Force to apply when near edges
 
-# Battle state
-var is_lunging: bool = false
-
-# Add these variables near the top
-var carried_flag: Flag = null
-var team_flag_carrier: Mans = null  # Track who has our flag
 
 func _ready() -> void:
 	add_to_group("mans")
@@ -192,9 +194,17 @@ func put_down():
 	is_hovered = false
 	sprite.position.y = 4
 	shadow.scale = Vector2(1, 1)
-	dust_particles.emitting = true;
+	dust_particles.emitting = true
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	update_outline()
+	
+	if from_drawer:
+		# Move from drag layer to game elements
+		var game_elements = game.game_elements
+		get_parent().remove_child(self)
+		game_elements.add_child(self)
+		position = get_global_mouse_position()
+		from_drawer = false;
 
 func _on_mouse_entered() -> void:
 	if !is_dragging:
